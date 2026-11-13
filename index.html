@@ -7,37 +7,43 @@
 <meta name="theme-color" content="#1f3f8f">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>JISUDESC 2026 · Jogos do CCT</title>
+<title>JISUDESC 2026 · Jogos</title>
 <style>
-:root{--bg:#f4f6fb;--card:#fff;--ink:#1a2233;--mut:#6b7488;--pri:#1f3f8f;--acc:#f5b400;--cct:#e8efff;--line:#e3e7f0}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1420;--card:#192030;--ink:#e8ecf5;--mut:#98a2b8;--pri:#7fa2ff;--cct:#23305a;--line:#2a3348}}
+:root{--bg:#f4f6fb;--card:#fff;--ink:#1a2233;--mut:#6b7488;--pri:#1f3f8f;--acc:#f5b400;--hl:#e8efff;--line:#e3e7f0}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1420;--card:#192030;--ink:#e8ecf5;--mut:#98a2b8;--pri:#7fa2ff;--hl:#23305a;--line:#2a3348}}
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-header{background:var(--pri);color:#fff;padding:16px 16px 12px}
-@media (prefers-color-scheme:dark){header{background:#1f3f8f}}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:#1f3f8f;color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 10px}
 header h1{margin:0;font-size:20px}
-header p{margin:4px 0 0;font-size:13px;opacity:.85}
+header p{margin:3px 0 0;font-size:12px;opacity:.85}
+.ctr{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ctr label{font-size:13px;opacity:.9}
+.ctr select{flex:1;font-size:16px;font-weight:700;padding:8px 10px;border-radius:10px;border:0;background:#fff;color:#1f3f8f}
+.tabs{display:flex;background:#1f3f8f;padding:0 8px}
+.tabs button{flex:1;border:0;background:none;color:#fff;opacity:.7;font-size:14px;font-weight:700;padding:10px 0;border-bottom:3px solid transparent}
+.tabs button.on{opacity:1;border-bottom-color:var(--acc)}
+.hide{display:none!important}
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 12px 6px;border-bottom:1px solid var(--line)}
 .seg{display:flex;gap:6px;overflow-x:auto}
 .seg button{flex:1 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 12px;font-size:14px;font-weight:600}
-.seg button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.seg button.on{background:#1f3f8f;color:#fff;border-color:#1f3f8f}
 .tog{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
 .tog label{display:flex;align-items:center;gap:6px;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 10px}
-.wrap{padding:12px}
+.wrap{padding:12px 12px calc(30px + env(safe-area-inset-bottom))}
 details.sp{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px}
 details.sp summary{padding:12px 14px;font-weight:600;font-size:15px;cursor:pointer}
 .chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px}
-.chip{display:flex;align-items:center;border:1px solid var(--line);border-radius:18px;background:var(--bg);font-size:13px;overflow:hidden}
+.chip{display:flex;align-items:center;border:1px solid var(--line);border-radius:18px;background:var(--bg);overflow:hidden}
 .chip .n{padding:7px 4px 7px 10px;background:none;border:0;color:var(--ink);font-size:13px}
-.chip.sel{border-color:var(--pri);background:var(--cct)}
+.chip.sel{border-color:var(--pri);background:var(--hl)}
 .chip.sel .n{font-weight:700}
 .chip .st{border:0;background:none;padding:7px 9px 7px 4px;font-size:15px;color:var(--mut)}
-.chip .st.f{color:var(--acc)}
+.f{color:var(--acc)!important}
 .mini{display:flex;gap:8px;padding:0 12px 12px}
 .mini button{font-size:12px;border:1px solid var(--line);background:none;color:var(--pri);border-radius:14px;padding:5px 10px}
 h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 .g{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;display:flex;gap:12px}
-.g.past{opacity:.5}
+.g.past{opacity:.55}
 .g.next{border:2px solid var(--acc)}
 .g.cond{border-style:dashed}
 .tm{min-width:58px;text-align:center}
@@ -47,295 +53,231 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
 .sport{font-weight:700;font-size:14px}
 .fstar{border:0;background:none;font-size:20px;line-height:1;color:var(--mut);padding:0 2px}
-.fstar.f{color:var(--acc)}
-.vs{margin:6px 0;font-size:15px}
-.vs .c{background:var(--cct);color:var(--pri);font-weight:800;padding:1px 6px;border-radius:6px}
+.vs{margin:6px 0;font-size:15px;overflow-wrap:anywhere}
+.c{background:var(--hl);color:var(--pri);font-weight:800;padding:1px 6px;border-radius:6px}
+.res{display:inline-block;margin-left:6px;font-weight:800;background:#1f3f8f;color:#fff;border-radius:6px;padding:1px 7px;font-size:14px}
 .meta{font-size:12px;color:var(--mut);line-height:1.5}
-.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;margin:4px 4px 0 0;background:var(--bg);border:1px solid var(--line)}
-.tag.you{background:var(--acc);color:#222;border-color:var(--acc)}
-.tag.cd{color:var(--mut)}
-.empty{text-align:center;color:var(--mut);padding:30px 10px}
-.tabs{display:flex;background:var(--pri);padding:0 12px}
-@media (prefers-color-scheme:dark){.tabs{background:#1f3f8f}}
-.tabs button{flex:1;border:0;background:none;color:#fff;opacity:.7;font-size:15px;font-weight:700;padding:10px 0;border-bottom:3px solid transparent}
-.tabs button.on{opacity:1;border-bottom-color:var(--acc)}
-.hide{display:none!important}
-.res{display:inline-block;margin-left:6px;font-weight:800;background:var(--pri);color:#fff;border-radius:6px;padding:1px 7px;font-size:14px}
-.tbl{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
-.tbl h3{margin:0;padding:10px 12px 2px;font-size:15px}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;margin:4px 4px 0 0;background:var(--bg);border:1px solid var(--line);color:var(--mut)}
+.tag.nx{background:var(--acc);color:#222;border-color:var(--acc)}
+.empty{text-align:center;color:var(--mut);padding:30px 10px;font-size:14px}
+.tbl,.rg{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.tbl h3,.rg h3{margin:0;padding:10px 12px 2px;font-size:15px}
 .tbl .sub{padding:0 12px 8px;font-size:12px;color:var(--mut)}
 .tbl table{width:100%;border-collapse:collapse;font-size:13px}
-.tbl th{font-size:11px;color:var(--mut);font-weight:600;padding:6px 4px;border-top:1px solid var(--line)}
-.tbl td{padding:8px 4px;border-top:1px solid var(--line);text-align:center}
-.tbl td.t,.tbl th.t{text-align:left;padding-left:12px}
-.tbl tr.cct td{background:var(--cct);font-weight:800;color:var(--pri)}
+.tbl th{font-size:11px;color:var(--mut);font-weight:600;padding:6px 3px;border-top:1px solid var(--line)}
+.tbl td{padding:8px 3px;border-top:1px solid var(--line);text-align:center}
+.tbl td.t,.tbl th.t{text-align:left;padding-left:10px;overflow-wrap:anywhere}
+.tbl tr.me td{background:var(--hl);font-weight:800;color:var(--pri)}
 .tbl tr.q td:first-child{box-shadow:inset 3px 0 0 #2e9d5b}
 .gl{font-size:12px;color:var(--mut);padding:6px 12px 10px;border-top:1px solid var(--line);line-height:1.7}
 .gl b{color:var(--ink)}
-footer{font-size:11px;color:var(--mut);text-align:center;padding:10px 16px 30px}
+.rg .bx{padding:4px 12px 12px;font-size:13px;line-height:1.55}
+.rg ul{margin:4px 0;padding-left:18px}
+.btn{display:block;text-align:center;background:#1f3f8f;color:#fff;text-decoration:none;font-weight:700;padding:12px;border-radius:12px;margin-bottom:12px}
+.ov{position:fixed;inset:0;background:rgba(10,15,30,.6);z-index:20;display:flex;align-items:center;justify-content:center;padding:20px}
+.ov .box{background:var(--card);border-radius:18px;padding:18px;max-width:420px;width:100%}
+.ov h3{margin:0 0 4px}
+.ov p{margin:0 0 12px;font-size:13px;color:var(--mut)}
+.ov .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ov .grid button{padding:12px 4px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-weight:700;font-size:14px}
+.ov .grid button.all{grid-column:1/-1}
 </style>
 </head>
 <body>
 <header>
-  <h1>JISUDESC 2026 · CCT</h1>
-  <p>Horários e resultados do CCT · <span id="upd"></span></p>
+  <h1>JISUDESC 2026</h1>
+  <p>Horários, resultados e classificação · <span id="upd"></span></p>
+  <div class="ctr"><label for="center">Meu centro</label><select id="center"></select></div>
 </header>
-<nav class="tabs"><button id="tabJ" class="on">Jogos</button><button id="tabC">Classificação</button></nav>
+<nav class="tabs"><button id="tabJ" class="on">Jogos</button><button id="tabC">Classificação</button><button id="tabR">Regulamento</button></nav>
 
 <div class="bar" id="barJ">
   <div class="seg" id="days"></div>
   <div class="tog">
     <label><input type="checkbox" id="onlyFav"> Só favoritos ★</label>
-    <label><input type="checkbox" id="showCond" checked> Fases finais (se o CCT avançar)</label>
+    <label><input type="checkbox" id="showCond" checked> Fases finais</label>
   </div>
 </div>
 
-<div class="wrap hide" id="viewC"></div>
 <div class="wrap" id="viewJ">
   <details class="sp" id="spBox">
     <summary id="spSum">Esportes</summary>
-    <div class="mini"><button id="all">Mostrar todos</button><button id="none">Selecionar favoritos</button></div>
+    <div class="mini"><button id="all">Mostrar todos</button><button id="favsel">Selecionar favoritos</button></div>
     <div class="chips" id="chips"></div>
   </details>
   <div id="list"></div>
 </div>
-<footer>Toque no nome do esporte para filtrar e na ★ para favoritar. Horários "em sequência" seguem a ordem dos jogos anteriores. Confira sempre os boletins oficiais.</footer>
+<div class="wrap hide" id="viewC"></div>
+<div class="wrap hide" id="viewR"></div>
 
+<div class="ov hide" id="ov"><div class="box"><h3>Qual é o seu centro?</h3><p>Os jogos dele ficam em destaque. Dá para trocar depois, lá em cima.</p><div class="grid" id="ovg"></div></div></div>
+
+<script src="data.js"></script>
 <script>
 const DAYS={13:"Sexta-feira",14:"Sábado",15:"Domingo"};
-const QA="Quadra de areia";
-// s = esporte, d = dia, t = hora, a/b = equipes, l = local, f = fase, c = depende de classificação, n = observação
-const G=[
-// VÔLEI 4x4 MASCULINO
-{s:"Vôlei 4x4 Masculino",d:13,t:"13:30",a:"CCT",b:"CEPLAN",l:QA+" 3",f:"Classificatória (Grupo A)"},
-{s:"Vôlei 4x4 Masculino",d:13,t:"16:50",a:"REITORIA/CEAVI",b:"CCT",l:QA+" 3",f:"Classificatória (Grupo A)"},
-{s:"Vôlei 4x4 Masculino",d:14,t:"09:00",a:"1º A",b:"2º B",l:QA+" 2/3",f:"Semifinal",c:1,n:"Outra semi no mesmo horário: 1º B x 2º A"},
-{s:"Vôlei 4x4 Masculino",d:14,t:"10:00",a:"Perdedores das semis",b:"",l:QA+" 3",f:"Disputa de 3º",c:1},
-{s:"Vôlei 4x4 Masculino",d:14,t:"11:00",a:"Vencedores das semis",b:"",l:QA+" 3",f:"Final",c:1},
-// VÔLEI 4x4 MISTO
-{s:"Vôlei 4x4 Misto",d:13,t:"10:50",a:"CCT",b:"REITORIA",l:QA+" 3",f:"Classificatória (Grupo A)"},
-{s:"Vôlei 4x4 Misto",d:14,t:"15:30",a:"CEAD",b:"CCT",l:QA+" 3",f:"Classificatória (Grupo A)"},
-{s:"Vôlei 4x4 Misto",d:15,t:"09:00",a:"Semifinais",b:"",l:QA+" 2/3",f:"Semifinal",c:1,n:"1º M x melhor 2º · 2º M x 3º M"},
-{s:"Vôlei 4x4 Misto",d:15,t:"10:30",a:"Disputa de 3º e Final",b:"",l:QA+" 2/3",f:"Final",c:1},
-// BEACH TENNIS MASCULINO
-{s:"Beach Tennis Masculino",d:13,t:"13:30",a:"CEART1",b:"CCT",l:QA+" 1",f:"Classificatória (Grupo A)"},
-{s:"Beach Tennis Masculino",d:13,t:"13:50",a:"CEFID2",b:"CCT/ESAG",l:QA+" 2",f:"Classificatória (Grupo B)"},
-{s:"Beach Tennis Masculino",d:13,t:"14:10",a:"CEART2",b:"CCT",l:QA+" 1",f:"Classificatória (Grupo A)"},
-{s:"Beach Tennis Masculino",d:13,t:"14:50",a:"ESAG",b:"CCT",l:QA+" 2",f:"Classificatória (Grupo A)"},
-{s:"Beach Tennis Masculino",d:13,t:"15:30",a:"CERES",b:"CCT/ESAG",l:QA+" 2",f:"Classificatória (Grupo B)"},
-{s:"Beach Tennis Masculino",d:13,t:"16:30",a:"Semifinais",b:"",l:QA+" 2",f:"Semifinal",c:1,n:"16:30 2º M x 3º M · 16:50 1º M x melhor 2º"},
-{s:"Beach Tennis Masculino",d:13,t:"17:15",a:"Disputa de 3º",b:"",l:QA+" 2",f:"Disputa de 3º",c:1},
-{s:"Beach Tennis Masculino",d:13,t:"17:40",a:"Final",b:"",l:QA+" 2",f:"Final",c:1},
-// BEACH TENNIS MISTO
-{s:"Beach Tennis Misto",d:13,t:"10:25",a:"CERES/REITORIA",b:"CCT",l:QA+" 3",f:"Classificatória (Grupo C)"},
-{s:"Beach Tennis Misto",d:13,t:"10:50",a:"FAED",b:"CCT",l:QA+" 3",f:"Classificatória (Grupo C)"},
-{s:"Beach Tennis Misto",d:14,t:"10:00",a:"Semifinais",b:"",l:QA+" 2",f:"Semifinal",c:1,n:"Semis às 10:00 e 10:30"},
-{s:"Beach Tennis Misto",d:14,t:"11:00",a:"Disputa de 3º (11:00) e Final (11:30)",b:"",l:QA+" 2",f:"Final",c:1},
-// BASQUETE
-{s:"Basquete 3x3 Masculino",d:14,t:"15:30",a:"CEAVI/FAED/CEFID",b:"CERES/CCT",l:"Quadra poliesportiva",f:"Grupo único – jogo 1"},
-{s:"Basquete 3x3 Masculino",d:14,t:"16:00",a:"REITORIA",b:"CERES/CCT",l:"Quadra poliesportiva",f:"Grupo único – jogo 2",n:"Só se o CERES/CCT perder o jogo 1"},
-{s:"Basquete 3x3 Masculino",d:14,t:"16:30",a:"REITORIA",b:"CERES/CCT",l:"Quadra poliesportiva",f:"Grupo único – jogo 3",n:"Só se o CERES/CCT vencer o jogo 1"},
-// FUTEBOL SUÍÇO
-{s:"Futebol Suíço Masculino",d:14,t:"10:00",a:"CCT/CEPLAN",b:"CEAVI/CERES/CAV/REITORIA/ESAG",l:"Campo suíço",f:"Grupo único – jogo 1"},
-{s:"Futebol Suíço Masculino",d:14,t:"15:00",a:"CEFID",b:"CCT/CEPLAN",l:"Campo suíço",f:"Grupo único – jogo 2",n:"Só se o CCT/CEPLAN perder o jogo 1"},
-{s:"Futebol Suíço Masculino",d:15,t:"09:30",a:"CEFID",b:"CCT/CEPLAN",l:"Campo suíço",f:"Grupo único – jogo 3",n:"Só se o CCT/CEPLAN vencer o jogo 1"},
-{s:"Futebol Suíço Sênior",d:14,t:"11:00",a:"CAV",b:"CCT/CEFID/FAED/CEART",l:"Campo suíço",f:"Jogo único"},
-// BOCHA
-{s:"Bocha Masculino",d:13,t:"16:00",a:"CEO",b:"CESFI/CCT",l:"Cancha",f:"Quartas"},
-{s:"Bocha Masculino",d:13,t:"17:30",a:"Semifinal",b:"",l:"Cancha",f:"Semifinal",c:1,n:"Contra o vencedor de CEART2 x CESFI"},
-{s:"Bocha Masculino",d:14,t:"13:30",a:"Disputa de 3º (13:30) e Final (14:30)",b:"",l:"Cancha",f:"Final",c:1},
-{s:"Bocha Feminino",d:13,t:"10:20",a:"CCT",b:"CESFI/CEAVI",l:"Cancha",f:"Oitavas"},
-{s:"Bocha Feminino",d:14,t:"10:40",a:"CEO",b:"Vencedor CCT x CESFI/CEAVI",l:"Cancha",f:"Quartas",c:1},
-{s:"Bocha Feminino",d:14,t:"15:30",a:"Semifinal",b:"",l:"Cancha",f:"Semifinal",c:1,n:"Disputa de 3º às 17:30"},
-{s:"Bocha Feminino",d:15,t:"09:30",a:"Final",b:"",l:"Cancha",f:"Final",c:1},
-// SINUCA
-{s:"Sinuca Masculino",d:13,t:"14:00",a:"CEART/FAED",b:"CCT",l:"Sala de jogos – mesa 1",f:"Oitavas"},
-{s:"Sinuca Masculino",d:13,t:"15:30",a:"Quartas",b:"",l:"Sala de jogos – mesa 1",f:"Quartas",c:1,n:"Contra o vencedor de CAV1 x CESFI1"},
-{s:"Sinuca Masculino",d:13,t:"16:30",a:"Semifinal",b:"",l:"Sala de jogos",f:"Semifinal",c:1},
-{s:"Sinuca Masculino",d:13,t:"17:00",a:"Disputa de 3º e Final",b:"",l:"Sala de jogos",f:"Final",c:1},
-{s:"Sinuca Feminino",d:14,t:"13:50",a:"CEAD1",b:"CCT/CESFI",l:"Sala de jogos – mesa 1",f:"Classificatória (Grupo B)"},
-{s:"Sinuca Feminino",d:14,t:"14:50",a:"CEAD2",b:"CCT/CESFI",l:"Sala de jogos – mesa 1",f:"Classificatória (Grupo B)"},
-{s:"Sinuca Feminino",d:14,t:"15:40",a:"Semifinais",b:"",l:"Sala de jogos",f:"Semifinal",c:1},
-{s:"Sinuca Feminino",d:14,t:"16:10",a:"Disputa de 3º e Final",b:"",l:"Sala de jogos",f:"Final",c:1},
-// TÊNIS DE CAMPO
-{s:"Tênis de Campo Feminino",d:13,t:"14:15",a:"CCT",b:"CEFID",l:"Quadra de tênis",f:"Classificatória (Grupo A)"},
-{s:"Tênis de Campo Feminino",d:13,t:"15:45",a:"CESFI",b:"CCT",l:"Quadra de tênis",f:"Classificatória (Grupo A)"},
-{s:"Tênis de Campo Feminino",d:14,t:"09:00",a:"Semifinais",b:"",l:"Quadra de tênis",f:"Semifinal",c:1,n:"09:00 1º A x 2º B · 10:00 1º B x 2º A"},
-{s:"Tênis de Campo Feminino",d:14,t:"14:30",a:"Final",b:"",l:"Quadra de tênis",f:"Final",c:1},
-// TOTÓ
-{s:"Totó Masculino",d:13,t:"14:20",a:"CAV1",b:"CCT",l:"Local a definir – mesa 1",f:"Classificatória (Grupo B)"},
-{s:"Totó Masculino",d:13,t:"15:00",a:"CCT",b:"CEART1",l:"Local a definir – mesa 2",f:"Classificatória (Grupo B)"},
-{s:"Totó Masculino",d:13,t:"15:40",a:"CCT",b:"REITORIA",l:"Local a definir – mesa 2",f:"Classificatória (Grupo B)"},
-{s:"Totó Masculino",d:13,t:"16:00",a:"Semifinais",b:"",l:"Local a definir",f:"Semifinal",c:1,n:"Disputa de 3º e final às 16:20"},
-{s:"Totó Feminino",d:13,t:"17:00",a:"CCT/CEAD",b:"CEAD",l:"Local a definir – mesa 1",f:"Classificatória (Grupo A)"},
-{s:"Totó Feminino",d:13,t:"17:20",a:"CCT/CEAD",b:"CEART",l:"Local a definir – mesa 1",f:"Classificatória (Grupo A)"},
-{s:"Totó Feminino",d:13,t:"17:40",a:"Semifinais",b:"",l:"Local a definir",f:"Semifinal",c:1,n:"Disputa de 3º e final às 18:00"},
-// TRUCO
-{s:"Truco",d:13,t:"14:00",a:"CCT1",b:"REITORIA/CEPLAN",l:"Salão 2 – mesa 7",f:"Classificatória (Grupo D)"},
-{s:"Truco",d:13,t:"14:00",a:"ESAG1",b:"CCT2",l:"Salão 2 – mesa 4",f:"Classificatória (Grupo B)"},
-{s:"Truco",d:13,t:"seq",a:"CEPLAN2",b:"CCT2",l:"Salão 2 – mesa 4",f:"Classificatória (Grupo B) – 2ª rodada"},
-{s:"Truco",d:13,t:"seq",a:"CERES",b:"CCT2",l:"Salão 2 – mesa 3",f:"Classificatória (Grupo B) – 3ª rodada"},
-{s:"Truco",d:13,t:"seq",a:"CEAD",b:"CCT1",l:"Salão 2 – mesa 7",f:"Classificatória (Grupo D) – 3ª rodada"},
-{s:"Truco",d:13,t:"seq",a:"Quartas, semis e final",b:"",l:"Salão 2",f:"Eliminatórias",c:1},
-// CANASTRA
-{s:"Canastra",d:14,t:"08:30",a:"CEO1",b:"CCT",l:"Salão 2 – mesa 1",f:"16 avos"},
-{s:"Canastra",d:14,t:"09:15",a:"CERES1",b:"Vencedor CEO1 x CCT",l:"Salão 2 – mesa 1",f:"Oitavas",c:1,n:"Depois seguem quartas, semi e final em sequência"},
-// DOMINÓ
-{s:"Dominó",d:14,t:"13:30",a:"REIT3",b:"CCT/CEART",l:"Salão 2 – mesa 8",f:"16 avos"},
-{s:"Dominó",d:14,t:"14:15",a:"Vencedor CEFID1 x CEAVI2",b:"CCT1",l:"Salão 2 – mesa 4",f:"Oitavas"},
-{s:"Dominó",d:14,t:"14:15",a:"CCT2",b:"REIT2",l:"Salão 2 – mesa 6",f:"Oitavas"},
-{s:"Dominó",d:14,t:"seq",a:"Quartas, semis e final",b:"",l:"Salão 2",f:"Eliminatórias",c:1},
-// FIFA
-{s:"FIFA",d:14,t:"08:45",a:"CCT",b:"CEART",l:"Sala de jogos",f:"Classificatória (Grupo C)"},
-{s:"FIFA",d:14,t:"10:45",a:"CCT",b:"CESFI",l:"Sala de jogos",f:"Classificatória (Grupo C)"},
-{s:"FIFA",d:14,t:"11:00",a:"Semifinais",b:"",l:"Sala de jogos",f:"Semifinal",c:1,n:"Semis 11:00 e 11:15 · 3º lugar 11:30 · Final 11:45"},
-// INDIVIDUAIS
-{s:"Corrida Rústica",d:14,t:"07:30",a:"Concentração",b:"",l:"Em frente à casa de chá",f:"Todos os atletas",n:"CCT: Alessandro Siqueira, Alex Bellucco do Carmo, Diogo H. Figueiredo"},
-{s:"Corrida Rústica",d:14,t:"08:00",a:"Largada feminina",b:"",l:"Em frente à casa de chá",f:"Feminino",n:"CCT: Ana Borges de Azevedo, Ana Carolina Scharf da Silva, Francielle K. Boeing, Ketry G. F. dos Passos, Regina H. Munhoz"},
-{s:"Corrida Rústica",d:14,t:"08:20",a:"Largada masculina",b:"",l:"Em frente à casa de chá",f:"Masculino",n:"CCT: Alessandro Siqueira, Alex Bellucco do Carmo, Diogo H. Figueiredo"},
-{s:"Natação",d:14,t:"14:00",a:"Provas de natação",b:"",l:"AFFESC (14:00 – 15:00)",f:"Masculino e feminino",n:"CCT: Carlos Raphael Rocha"},
-{s:"Taco Masculino",d:14,t:"13:30",a:"Chamada das duplas e sorteio",b:"",l:"Gramado",f:"Jogos até 18:00",n:"CCT: Julio Cesar de Oliveira Zimmermann"},
-{s:"Xadrez",d:15,t:"09:00",a:"Congresso técnico",b:"",l:"Salão de jogos",f:"Início do torneio",n:"CCT: Julio Cesar de Oliveira Zimmermann"},
-// GINCANA
-{s:"Gincana",d:13,t:"11:00",a:"Qual é a música?",b:"",l:"Salão ao lado da CCO",f:"Prova"},
-{s:"Gincana",d:13,t:"14:30",a:"Enche o balde",b:"",l:"Quadra poliesportiva",f:"Prova"},
-{s:"Gincana",d:13,t:"15:30",a:"Transporte de algodão",b:"",l:"Quadra poliesportiva",f:"Prova"},
-{s:"Gincana",d:13,t:"16:00",a:"Transforme em múmia",b:"",l:"Quadra poliesportiva",f:"Prova"},
-{s:"Gincana",d:13,t:"17:00",a:"Bexiga grudada",b:"",l:"Quadra poliesportiva",f:"Prova"},
-{s:"Gincana",d:14,t:"10:00",a:"Acerte o copo",b:"",l:"Quadra poliesportiva",f:"Prova"},
-{s:"Gincana",d:14,t:"11:00",a:"Corrida do canudinho",b:"",l:"Quadra poliesportiva",f:"Prova"},
-{s:"Gincana",d:14,t:"14:00",a:"Não pode rir",b:"",l:"Piscina AFFESC",f:"Prova"},
-{s:"Gincana",d:14,t:"15:30",a:"Boliche reciclável",b:"",l:"Piscina AFFESC",f:"Prova"},
-{s:"Gincana",d:14,t:"16:30",a:"Desmonta e monta",b:"",l:"Piscina AFFESC",f:"Prova"},
-];
-// ===== RESULTADOS =====
-const BOLETIM="Boletim 1";
-// Placar dos jogos do CCT na aba Jogos: chave "Esporte|dia|hora|timeA|timeB" -> "2 x 0"
-const R={};
-// Grupos dos esportes coletivos. Placar: [pontos A, pontos B] (sets no vôlei, gols no futebol, pontos no basquete) ou null
-const STD=[
- {s:"Vôlei 4x4 Masculino",tipo:"sets",grupos:[
-  {n:"Grupo A",cls:"1º e 2º vão à semifinal",q:2,times:["CCT","CEPLAN","REITORIA/CEAVI"],jogos:[["CCT","CEPLAN",null],["REITORIA/CEAVI","CEPLAN",null],["REITORIA/CEAVI","CCT",null]]},
-  {n:"Grupo B",cls:"1º e 2º vão à semifinal",q:2,times:["CEO/CERES","CEFID","CAV"],jogos:[["CEO/CERES","CEFID",null],["CAV","CEFID",null],["CAV","CEO/CERES",null]]}]},
- {s:"Vôlei 4x4 Misto",tipo:"sets",grupos:[
-  {n:"Grupo A",cls:"1º de cada grupo + melhor 2º vão à semifinal",q:1,times:["CCT","REITORIA","CEAD"],jogos:[["CCT","REITORIA",null],["CEAD","REITORIA",null],["CEAD","CCT",null]]},
-  {n:"Grupo B",cls:"1º de cada grupo + melhor 2º vão à semifinal",q:1,times:["CAV","CERES/CESFI","ESAG/FAED"],jogos:[["CAV","CERES/CESFI",null],["ESAG/FAED","CERES/CESFI",null],["ESAG/FAED","CAV",null]]},
-  {n:"Grupo C",cls:"1º de cada grupo + melhor 2º vão à semifinal",q:1,times:["CEO","CEPLAN","CEART"],jogos:[["CEO","CEPLAN",null],["CEART","CEPLAN",null],["CEART","CEO",null]]}]},
- {s:"Vôlei 4x4 Feminino",tipo:"sets",grupos:[
-  {n:"Grupo único",cls:"Rodízio simples – campeão é o 1º",q:1,times:["CEO","CAV/CERES/REITORIA","CEPLAN","CEFID"],jogos:[["CEO","CAV/CERES/REITORIA",null],["CEPLAN","CEFID",null],["CEO","CEPLAN",null],["CAV/CERES/REITORIA","CEFID",null],["CEO","CEFID",null],["CAV/CERES/REITORIA","CEPLAN",null]]}]},
- {s:"Futebol Suíço Masculino",tipo:"gols",grupos:[
-  {n:"Grupo único",cls:"Rodízio simples – campeão é o 1º",q:1,times:["CCT/CEPLAN","CEAVI/CERES/CAV/REITORIA/ESAG","CEFID"],jogos:[["CCT/CEPLAN","CEAVI/CERES/CAV/REITORIA/ESAG",null]],pend:"Jogo 2 (sáb 15:00): CEFID x perdedor do jogo 1 · Jogo 3 (dom 09:30): CEFID x vencedor do jogo 1"}]},
- {s:"Basquete 3x3 Masculino",tipo:"pts",grupos:[
-  {n:"Grupo único",cls:"Rodízio simples – campeão é o 1º",q:1,times:["CEAVI/FAED/CEFID","CERES/CCT","REITORIA"],jogos:[["CEAVI/FAED/CEFID","CERES/CCT",null]],pend:"Jogo 2 (16:00): REITORIA x perdedor do jogo 1 · Jogo 3 (16:30): REITORIA x vencedor do jogo 1"}]},
- {s:"Futebol Suíço Sênior",tipo:"gols",grupos:[
-  {n:"Jogo único",cls:"Quem vencer é campeão",q:1,times:["CAV","CCT/CEFID/FAED/CEART"],jogos:[["CAV","CCT/CEFID/FAED/CEART",null]]}]},
-];
+const SHORT={13:"Sexta",14:"Sábado",15:"Domingo"};
+const ALIAS={REIT:"REITORIA",CE0:"CEO",CERESI:"CERES"};
+function esc(x){return String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function centersIn(str){const out=new Set();(String(str).toUpperCase().match(/[A-Z0-9]{2,}/g)||[]).forEach(w=>{w=w.replace(/\d+$/,"");w=ALIAS[w]||w;if(CENTROS.includes(w))out.add(w)});return out}
+function mins(t){if(!/^\d/.test(t))return null;const[h,m]=t.split(":").map(Number);return h*60+m}
+
+// Monta a lista de jogos
+const G=[];
+const last={};
+RAW.forEach(r=>{const[s,d,t,a,b,l,f,c,n,res]=r;const k=s+d;let o=mins(t);
+  if(o===null){o=(last[k]||0)+1}last[k]=o;
+  G.push({s,d,t,a,b,l,f,c:!!c,n:n||"",r:res||"",o,cs:new Set([...centersIn(a),...centersIn(b)])})});
+IND.forEach(r=>{const[s,d,t,a,l,f,who]=r;
+  G.push({s,d,t,a,b:"",l,f,c:false,n:"",r:"",o:mins(t),ind:who,cs:new Set(who==="ALL"||!who?[]:Object.keys(who)),all:who==="ALL"||!who})});
+// Centros que disputam cada esporte (para mostrar fases finais)
+const SPC={};G.forEach(g=>{if(!g.c){SPC[g.s]=SPC[g.s]||new Set();g.cs.forEach(x=>SPC[g.s].add(x))}});
+const SPORTS=[...new Set(G.map(g=>g.s))];
+
+function load(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let center=load("jis_center",null);
+const hc=decodeURIComponent(location.hash.slice(1)).toUpperCase();
+if(CENTROS.includes(hc)||hc==="TODOS"){center=hc==="TODOS"?"ALL":hc;save("jis_center",center)}
+let fav=new Set(load("jis_fav2",[])),sel=new Set(load("jis_sel2",[])),day=load("jis_day","all"),tab=load("jis_tab","J");
+const onlyFav=document.getElementById("onlyFav"),showCond=document.getElementById("showCond");
+onlyFav.checked=load("jis_of",false);showCond.checked=load("jis_sc",true);
+function persist(){save("jis_fav2",[...fav]);save("jis_sel2",[...sel]);save("jis_day",day);save("jis_of",onlyFav.checked);save("jis_sc",showCond.checked)}
+
+// Seletor de centro
+const csel=document.getElementById("center");
+csel.innerHTML='<option value="ALL">Todos os centros</option>'+CENTROS.map(c=>`<option value="${c}">${c}</option>`).join("");
+function setCenter(c){center=c;save("jis_center",c);csel.value=c;document.getElementById("ov").classList.add("hide");sel.clear();persist();renderAll()}
+csel.onchange=()=>setCenter(csel.value);
+document.getElementById("ovg").innerHTML=CENTROS.map(c=>`<button data-c="${c}">${c}</button>`).join("")+'<button class="all" data-c="ALL">Ver todos os centros</button>';
+document.querySelectorAll("#ovg button").forEach(b=>b.onclick=()=>setCenter(b.dataset.c));
+
+function involved(g){if(center==="ALL")return true;if(g.all)return true;if(g.cs.has(center))return true;
+  if(g.c&&g.cs.size===0&&SPC[g.s]&&SPC[g.s].has(center))return true;return false}
+function hl(x){if(center==="ALL")return esc(x);
+  return esc(x).split(/(\s+x\s+|\s+ou\s+|\(|\))/).map(p=>centersIn(p).has(center)&&!/^\s*(x|ou)\s*$/.test(p)?`<span class="c">${p}</span>`:p).join("")}
+function toggleFav(s){fav.has(s)?fav.delete(s):fav.add(s);persist();renderAll()}
+
+function renderDays(){const el=document.getElementById("days");el.innerHTML="";
+  [["all","Todos"],["13","Sexta-feira"],["14","Sábado"],["15","Domingo"]].forEach(([k,l])=>{const b=document.createElement("button");b.textContent=l;if(String(day)===k)b.className="on";b.onclick=()=>{day=k;persist();renderAll()};el.appendChild(b)})}
+function mySports(){return SPORTS.filter(s=>G.some(g=>g.s===s&&!g.c&&involved(g)))}
+function renderChips(){const el=document.getElementById("chips");el.innerHTML="";
+  mySports().forEach(s=>{const c=document.createElement("div");c.className="chip"+(sel.has(s)?" sel":"");
+    const n=document.createElement("button");n.className="n";n.textContent=s;n.onclick=()=>{sel.has(s)?sel.delete(s):sel.add(s);persist();renderAll()};
+    const st=document.createElement("button");st.className="st"+(fav.has(s)?" f":"");st.textContent=fav.has(s)?"★":"☆";st.onclick=()=>toggleFav(s);
+    c.append(n,st);el.appendChild(c)});
+  document.getElementById("spSum").textContent="Esportes "+(sel.size?`(${sel.size} selecionado${sel.size>1?"s":""})`:"(todos)")+" · ★ "+fav.size}
+
+function renderList(){
+  const now=new Date(),nowDay=(now.getFullYear()===2026&&now.getMonth()===10)?now.getDate():null,nowMin=now.getHours()*60+now.getMinutes();
+  let list=G.filter(g=>involved(g)&&(day==="all"||String(g.d)===String(day))&&(!sel.size||sel.has(g.s))&&(!onlyFav.checked||fav.has(g.s))&&(showCond.checked||!g.c));
+  list.sort((a,b)=>a.d-b.d||a.o-b.o);
+  const el=document.getElementById("list");el.innerHTML="";
+  if(!list.length){el.innerHTML=`<div class="empty">Nenhum jogo com esses filtros.${onlyFav.checked&&!fav.size?"<br>Toque na ☆ de um esporte para favoritá-lo.":""}</div>`;return}
+  const isPast=g=>{if(nowDay===null)return false;if(g.d!==nowDay)return g.d<nowDay;const m=mins(g.t);return m!==null&&m+40<nowMin};
+  let marked=false,cur=null;
+  list.forEach(g=>{
+    if(g.d!==cur){cur=g.d;const h=document.createElement("h2");h.className="day";h.textContent=DAYS[g.d];el.appendChild(h)}
+    const past=g.r?true:isPast(g);let next=false;
+    if(!past&&!marked&&nowDay!==null&&g.d>=nowDay&&mins(g.t)!==null){next=true;marked=true}
+    let who="";
+    if(g.ind&&g.ind!=="ALL"){if(center==="ALL"){const n=Object.values(g.ind).reduce((a,v)=>a+v.split(";").length,0);who=`${n} inscritos`}
+      else if(g.ind[center])who=`${center}: `+g.ind[center].split(";").map(x=>x.trim()).join(", ")}
+    if(g.all)who="Todos os centros";
+    const vs=g.b?`${hl(g.a)} <span style="color:var(--mut)">x</span> ${hl(g.b)}`:hl(g.a);
+    const d=document.createElement("div");d.className="g"+(past?" past":"")+(next?" next":"")+(g.c?" cond":"");
+    d.innerHTML=`<div class="tm"><b>${g.t==="seq"?"seq.":esc(g.t)}</b><small>${g.t==="seq"?"em sequência":SHORT[g.d]}</small></div>
+    <div class="bd"><div class="top"><span class="sport">${esc(g.s)}</span><button class="fstar${fav.has(g.s)?" f":""}" aria-label="Favoritar">${fav.has(g.s)?"★":"☆"}</button></div>
+    <div class="vs">${vs}${g.r?`<span class="res">${esc(g.r)}</span>`:""}</div>
+    <div class="meta">📍 ${esc(g.l)}<br>${esc(g.f)}${g.n?"<br>"+esc(g.n):""}${who?"<br>"+esc(who):""}</div>
+    ${next?'<span class="tag nx">Próximo</span>':""}${g.c?'<span class="tag">Depende da classificação</span>':""}${g.r?'<span class="tag">Encerrado</span>':""}</div>`;
+    d.querySelector(".fstar").onclick=()=>toggleFav(g.s);el.appendChild(d)})}
+
+// ===== CLASSIFICAÇÃO (critérios do Regulamento Técnico) =====
+// Vôlei 4x4 e Basquete 3x3: vitória 2, derrota 1. Futebol suíço: vitória 3, empate 1, derrota 0.
+function setPts(det){let p=0,c=0;(det||"").split(/[\s,;]+/).forEach(x=>{const m=x.match(/^(\d+)-(\d+)$/);if(m){p+=+m[1];c+=+m[2]}});return[p,c]}
+function avg(a,b){return b===0?(a>0?Infinity:0):a/b}
 function table(g,tipo){
-  const T={};g.times.forEach(t=>T[t]={t,J:0,V:0,E:0,D:0,P:0,C:0,Pts:0});
-  g.jogos.forEach(([a,b,r])=>{if(!r||!T[a]||!T[b])return;const[x,y]=r;const A=T[a],B=T[b];
-    A.J++;B.J++;A.P+=x;A.C+=y;B.P+=y;B.C+=x;
+  const T={};g.times.forEach(t=>T[t]={t,J:0,V:0,E:0,D:0,P:0,C:0,SP:0,SC:0,Pts:0});
+  const played=[];
+  g.jogos.forEach(([a,b,r,det])=>{if(!r||!T[a]||!T[b])return;const[x,y]=r,A=T[a],B=T[b];played.push([a,b,x,y]);
+    A.J++;B.J++;
+    if(tipo==="sets"){A.SP+=x;A.SC+=y;B.SP+=y;B.SC+=x;const[p,c]=setPts(det);A.P+=p;A.C+=c;B.P+=c;B.C+=p}
+    else{A.P+=x;A.C+=y;B.P+=y;B.C+=x}
     if(x>y){A.V++;B.D++}else if(y>x){B.V++;A.D++}else{A.E++;B.E++}});
-  const L=Object.values(T);L.forEach(o=>o.Pts=tipo==="gols"?o.V*3+o.E:o.V);
-  L.sort((a,b)=>b.Pts-a.Pts||(b.P-b.C)-(a.P-a.C)||b.P-a.P||a.t.localeCompare(b.t));
+  const L=Object.values(T);
+  L.forEach(o=>o.Pts=tipo==="gols"?o.V*3+o.E:o.V*2+o.D);
+  const h2h=(a,b)=>{for(const[x,y,s1,s2]of played){if(x===a.t&&y===b.t)return s2-s1;if(x===b.t&&y===a.t)return s1-s2}return 0};
+  const multi=(a,b)=>{
+    if(tipo==="sets")return avg(b.SP,b.SC)-avg(a.SP,a.SC)||avg(b.P,b.C)-avg(a.P,a.C)||a.t.localeCompare(b.t);
+    if(tipo==="gols")return b.V-a.V||(b.P-b.C)-(a.P-a.C)||b.P-a.P||a.t.localeCompare(b.t);
+    return (b.P-b.C)-(a.P-a.C)||b.P-a.P||a.t.localeCompare(b.t)};
+  L.sort((a,b)=>b.Pts-a.Pts||multi(a,b));
+  // Empate entre exatamente 2 equipes: confronto direto primeiro
+  for(let i=0;i<L.length-1;i++){const same=L.filter(o=>o.Pts===L[i].Pts);
+    if(same.length===2&&L[i+1].Pts===L[i].Pts){const r=h2h(L[i],L[i+1]);if(r>0){[L[i],L[i+1]]=[L[i+1],L[i]]}else if(r===0&&tipo==="gols"){}i++}}
   return L;
 }
 function renderStd(){
-  const el=document.getElementById("viewC");
-  const lab={sets:["Sets +","Sets −"],gols:["GP","GC"],pts:["Pts +","Pts −"]};
-  let h="";
-  STD.forEach(m=>m.grupos.forEach(g=>{
-    const L=table(g,m.tipo),[pp,pc]=lab[m.tipo],ptsLab=m.tipo==="gols"?"Pts":"V";
+  const el=document.getElementById("viewC");let h="";
+  const isMine=t=>center!=="ALL"&&centersIn(t).has(center);
+  let list=STD;
+  if(center!=="ALL"){const mine=STD.filter(m=>m.grupos.some(g=>g.times.some(isMine)));const rest=STD.filter(m=>!mine.includes(m));list=[...mine,...rest]}
+  list.forEach(m=>m.grupos.forEach(g=>{
+    const L=table(g,m.tipo),gol=m.tipo==="gols";
+    const pp=m.tipo==="sets"?"Sets":gol?"Gols":"Pontos";
     h+=`<div class="tbl"><h3>${esc(m.s)} · ${esc(g.n)}</h3><div class="sub">${esc(g.cls)}</div><table>
-    <tr><th>#</th><th class="t">Equipe</th><th>J</th>${m.tipo==="gols"?"<th>V</th><th>E</th>":""}<th>${m.tipo==="gols"?"D":"V"}</th>${m.tipo==="gols"?"":"<th>D</th>"}<th>${pp}</th><th>${pc}</th><th>Saldo</th>${m.tipo==="gols"?"<th>Pts</th>":""}</tr>`;
-    L.forEach((o,i)=>{const sd=o.P-o.C;
-      h+=`<tr class="${/CCT/.test(o.t)?"cct":""} ${i<g.q&&o.J?"q":""}"><td>${i+1}</td><td class="t">${esc(o.t)}</td><td>${o.J}</td>${m.tipo==="gols"?`<td>${o.V}</td><td>${o.E}</td><td>${o.D}</td>`:`<td>${o.V}</td><td>${o.D}</td>`}<td>${o.P}</td><td>${o.C}</td><td>${sd>0?"+":""}${sd}</td>${m.tipo==="gols"?`<td><b>${o.Pts}</b></td>`:""}</tr>`});
-    h+=`</table><div class="gl">`+g.jogos.map(([a,b,r])=>`${team(a)} ${r?`<b>${r[0]} x ${r[1]}</b>`:"x"} ${team(b)}`).join("<br>")+(g.pend?`<br><i>${esc(g.pend)}</i>`:"")+`</div></div>`;
-  }));
-  h+=`<div class="empty" style="padding:10px">Ordem: vitórias (pontos no futebol), saldo e pró. Atualizado até o ${BOLETIM}. A classificação oficial dos boletins prevalece.</div>`;
-  el.innerHTML=h;
-}
-const YOU=new Set(["Vôlei 4x4 Masculino","Vôlei 4x4 Misto"]);
-const SPORTS=[...new Set(G.map(g=>g.s))];
+    <tr><th>#</th><th class="t">Equipe</th><th>Pts</th><th>J</th><th>V</th>${gol?"<th>E</th>":""}<th>D</th><th>${pp}</th><th>Saldo</th></tr>`;
+    L.forEach((o,i)=>{const a=m.tipo==="sets"?o.SP:o.P,b=m.tipo==="sets"?o.SC:o.C,sd=a-b;
+      h+=`<tr class="${isMine(o.t)?"me":""} ${i<g.q&&o.J?"q":""}"><td>${i+1}</td><td class="t">${esc(o.t)}</td><td><b>${o.Pts}</b></td><td>${o.J}</td><td>${o.V}</td>${gol?`<td>${o.E}</td>`:""}<td>${o.D}</td><td>${a}:${b}</td><td>${sd>0?"+":""}${sd}</td></tr>`});
+    h+=`</table><div class="gl">`+g.jogos.map(([a,b,r,det])=>`${hl(a)} ${r?`<b>${r[0]} x ${r[1]}</b>`:"x"} ${hl(b)}${det?` <span>(${esc(det)})</span>`:""}`).join("<br>")+(g.pend?`<br><i>${esc(g.pend)}</i>`:"")+`</div></div>`}));
+  h+=`<div class="empty" style="padding:10px">Pontuação e desempates conforme o Regulamento Técnico (aba Regulamento). Atualizado até o ${esc(BOLETIM)}. Em caso de diferença, vale a classificação oficial da organização.</div>`;
+  el.innerHTML=h}
 
-function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-let fav=new Set(load("jis_fav",[...YOU]));
-let sel=new Set(load("jis_sel",[]));
-let day=load("jis_day","all");
-const onlyFav=document.getElementById("onlyFav"), showCond=document.getElementById("showCond");
-onlyFav.checked=load("jis_of",false); showCond.checked=load("jis_sc",true);
+// ===== REGULAMENTO =====
+function renderReg(){
+  document.getElementById("viewR").innerHTML=`
+  <a class="btn" href="regulamento.pdf" target="_blank" rel="noopener">📄 Abrir regulamento completo (PDF)</a>
+  <div class="rg"><h3>Regras gerais</h3><div class="bx"><ul>
+   <li>Tolerância de <b>10 min</b> só no primeiro jogo; nos demais, <b>5 min</b>. Depois disso é W.O.</li>
+   <li>Quem leva W.O. é eliminado e todos os seus jogos naquela fase são anulados.</li>
+   <li>Com 3 grupos, o <b>melhor 2º colocado</b> também vai à semifinal.</li>
+   <li>Grupos com número diferente de equipes: desconsideram-se os jogos contra os últimos colocados dos grupos maiores, para igualar o número de jogos.</li>
+   <li>A disputa de 3º lugar pode ser cancelada por atraso; aí vale a campanha.</li>
+   <li>Avisos oficiais saem nos boletins do site do evento.</li></ul></div></div>
+  <div class="rg"><h3>Vôlei 4x4</h3><div class="bx"><ul>
+   <li>1º e 2º sets até <b>18 pontos</b>; set decisivo até <b>15</b>; sempre com 2 de vantagem.</li>
+   <li>Misto: sempre 2 jogadores de cada sexo em quadra.</li>
+   <li>Pontuação: <b>vitória 2, derrota 1</b>.</li>
+   <li>Desempate entre 2: confronto direto → sets average → pontos average → sorteio.</li>
+   <li>Desempate entre 3: sets average → pontos average → sorteio.</li></ul></div></div>
+  <div class="rg"><h3>Futebol suíço e sênior</h3><div class="bx"><ul>
+   <li>Pontuação: <b>vitória 3, empate 1, derrota 0</b>.</li>
+   <li>Jogo que precisa de vencedor e empata: 3 pênaltis alternados, depois um a um.</li>
+   <li>Expulsão: suspensão automática de uma partida.</li>
+   <li>Desempate entre 2: confronto direto → vitórias → saldo de gols → gols marcados → menos vermelhos → menos amarelos → sorteio.</li>
+   <li>Desempate entre 3 ou mais: vitórias → saldo de gols → gols marcados → cartões → sorteio.</li></ul></div></div>
+  <div class="rg"><h3>Basquete 3x3</h3><div class="bx"><ul>
+   <li>Meia quadra, 1 tempo de <b>10 min</b> cronometrados; 1 pedido de tempo por equipe.</li>
+   <li>Pontuação: <b>vitória 2, derrota 1</b>.</li>
+   <li>Desempate entre 2: confronto direto → saldo de pontos → pontos marcados → sorteio.</li>
+   <li>Desempate entre 3: saldo de pontos → pontos marcados → sorteio.</li></ul></div></div>
+  <div class="rg"><h3>Beach tennis</h3><div class="bx"><ul>
+   <li>Jogos até <b>6 games</b> (final até 8), com 2 de vantagem; em 6–6 tie-break até 7 (final: 8–8, tie-break até 10).</li>
+   <li>Pontuação nos grupos: <b>vitória 2, derrota 0</b>. Desempate: confronto direto → saldo.</li></ul></div></div>
+  <div class="empty" style="padding:6px">Resumo feito a partir do Regulamento JISUDESC 2026. As regras das outras modalidades estão no PDF completo.</div>`}
 
-function persist(){save("jis_fav",[...fav]);save("jis_sel",[...sel]);save("jis_day",day);save("jis_of",onlyFav.checked);save("jis_sc",showCond.checked)}
-
-function renderDays(){
-  const el=document.getElementById("days");el.innerHTML="";
-  [["all","Todos"],["13","Sexta-feira"],["14","Sábado"],["15","Domingo"]].forEach(([k,l])=>{
-    const b=document.createElement("button");b.textContent=l;if(String(day)===k)b.className="on";
-    b.onclick=()=>{day=k;persist();renderAll()};el.appendChild(b);
-  });
-}
-function renderChips(){
-  const el=document.getElementById("chips");el.innerHTML="";
-  SPORTS.forEach(s=>{
-    const c=document.createElement("div");c.className="chip"+(sel.has(s)?" sel":"");
-    const n=document.createElement("button");n.className="n";n.textContent=s;
-    n.onclick=()=>{sel.has(s)?sel.delete(s):sel.add(s);persist();renderAll()};
-    const st=document.createElement("button");st.className="st"+(fav.has(s)?" f":"");st.textContent=fav.has(s)?"★":"☆";
-    st.setAttribute("aria-label","Favoritar "+s);
-    st.onclick=()=>{toggleFav(s)};
-    c.append(n,st);el.appendChild(c);
-  });
-  document.getElementById("spSum").textContent="Esportes "+(sel.size?`(${sel.size} selecionado${sel.size>1?"s":""})`:"(todos)")+" · ★ "+fav.size;
-}
-function toggleFav(s){fav.has(s)?fav.delete(s):fav.add(s);persist();renderAll()}
-
-function mins(t){if(t==="seq")return null;const[h,m]=t.split(":").map(Number);return h*60+m}
-function sortKey(g){const m=mins(g.t);return g.d*10000+(m===null?1439:m)}
-function esc(x){return x.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
-function team(x){const e=esc(x);return /CCT/.test(x)?`<span class="c">${e}</span>`:e}
-
-function renderList(){
-  const now=new Date();
-  const nowDay=(now.getFullYear()===2026&&now.getMonth()===10)?now.getDate():null;
-  const nowMin=now.getHours()*60+now.getMinutes();
-  let list=G.filter(g=>(day==="all"||String(g.d)===String(day))
-    &&(!sel.size||sel.has(g.s))
-    &&(!onlyFav.checked||fav.has(g.s))
-    &&(showCond.checked||!g.c));
-  list.sort((a,b)=>sortKey(a)-sortKey(b));
-  const el=document.getElementById("list");el.innerHTML="";
-  if(!list.length){el.innerHTML=`<div class="empty">Nenhum jogo com esses filtros.${onlyFav.checked&&!fav.size?"<br>Toque na ☆ de um esporte para favoritá-lo.":""}</div>`;return}
-  const isPast=g=>{if(nowDay===null)return false;const m=mins(g.t);if(g.d<nowDay)return true;if(g.d>nowDay||m===null)return false;return m+40<nowMin};
-  let nextMarked=false,cur=null;
-  list.forEach(g=>{
-    if(g.d!==cur){cur=g.d;const h=document.createElement("h2");h.className="day";h.textContent=DAYS[g.d];el.appendChild(h)}
-    const past=isPast(g);let next=false;
-    if(!past&&!nextMarked&&nowDay!==null&&g.d>=nowDay&&mins(g.t)!==null){next=true;nextMarked=true}
-    const d=document.createElement("div");d.className="g"+(past?" past":"")+(next?" next":"")+(g.c?" cond":"");
-    const vs=g.b?`${team(g.a)} <span style="color:var(--mut)">x</span> ${team(g.b)}`:team(g.a);
-    d.innerHTML=`<div class="tm"><b>${g.t==="seq"?"seq.":g.t}</b><small>${g.t==="seq"?"em sequência":({13:"Sexta",14:"Sábado",15:"Domingo"})[g.d]}</small></div>
-    <div class="bd"><div class="top"><span class="sport">${esc(g.s)}</span><button class="fstar${fav.has(g.s)?" f":""}" aria-label="Favoritar">${fav.has(g.s)?"★":"☆"}</button></div>
-    <div class="vs">${vs}${R[g.s+"|"+g.d+"|"+g.t+"|"+g.a+"|"+g.b]?`<span class="res">${R[g.s+"|"+g.d+"|"+g.t+"|"+g.a+"|"+g.b]}</span>`:""}</div>
-    <div class="meta">📍 ${esc(g.l)}<br>${esc(g.f)}${g.n?"<br>"+esc(g.n):""}</div>
-    ${next?'<span class="tag" style="background:var(--acc);color:#222;border-color:var(--acc)">Próximo</span>':""}${YOU.has(g.s)?'<span class="tag you">Você joga</span>':""}${g.c?'<span class="tag cd">Se o CCT avançar</span>':""}</div>`;
-    d.querySelector(".fstar").onclick=()=>toggleFav(g.s);
-    el.appendChild(d);
-  });
-}
-function renderAll(){renderDays();renderChips();renderList()}
-document.getElementById("all").onclick=()=>{sel.clear();persist();renderAll()};
-document.getElementById("none").onclick=()=>{sel=new Set(fav);persist();renderAll()};
-onlyFav.onchange=()=>{persist();renderList()};
-showCond.onchange=()=>{persist();renderList()};
-document.getElementById("upd").textContent=BOLETIM;
-let tab=load("jis_tab","J");
 function setTab(t){tab=t;save("jis_tab",t);
-  ["J","C"].forEach(k=>{document.getElementById("tab"+k).className=k===t?"on":"";document.getElementById("view"+k).classList.toggle("hide",k!==t)});
+  ["J","C","R"].forEach(k=>{document.getElementById("tab"+k).className=k===t?"on":"";document.getElementById("view"+k).classList.toggle("hide",k!==t)});
   document.getElementById("barJ").classList.toggle("hide",t!=="J");window.scrollTo(0,0)}
-document.getElementById("tabJ").onclick=()=>setTab("J");
-document.getElementById("tabC").onclick=()=>setTab("C");
-renderStd();setTab(tab);
-renderAll();
+["J","C","R"].forEach(k=>document.getElementById("tab"+k).onclick=()=>setTab(k));
+document.getElementById("all").onclick=()=>{sel.clear();persist();renderAll()};
+document.getElementById("favsel").onclick=()=>{sel=new Set(fav);persist();renderAll()};
+onlyFav.onchange=()=>{persist();renderList()};showCond.onchange=()=>{persist();renderList()};
+document.getElementById("upd").textContent=BOLETIM;
+
+function renderAll(){renderDays();renderChips();renderList();renderStd()}
+if(center===null){document.getElementById("ov").classList.remove("hide");center="ALL"}else csel.value=center;
+renderReg();renderAll();setTab(tab);
 setInterval(renderList,60000);
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
 </script>
