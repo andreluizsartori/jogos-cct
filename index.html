@@ -352,7 +352,7 @@ function applyLive(tabs){
     if(!hits)continue;used++;
     // jogos de fase seguinte: casa por dia e horário quando a planilha já tem os nomes das equipes
     games.forEach(x=>{if(x.done||!x.d||!x.t)return;
-      const c=mine.filter(g=>!done.has(g)&&g.d===x.d&&g.t===x.t);if(c.length!==1)return;const g=c[0];
+      const c=mine.filter(g=>!done.has(g)&&g.d===x.d&&g.t===x.t);if(!c.length||(c.length>1&&!c.every(g=>g.c)))return;const g=c[0];
       if(realTeam(x.t1)&&realTeam(x.t2)){g.a=x.t1;g.b=x.t2;g.c=false;g.cs=new Set([...centersIn(x.t1),...centersIn(x.t2)])}else return;
       done.add(g);if(x.r){g.r=x.r;g.det=x.det}})}
   return used}
