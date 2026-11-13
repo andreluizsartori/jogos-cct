@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f3f8f">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>JISUDESC 2026 · Jogos do CCT</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#1a2233;--mut:#6b7488;--pri:#1f3f8f;--acc:#f5b400;--cct:#e8efff;--line:#e3e7f0}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1420;--card:#192030;--ink:#e8ecf5;--mut:#98a2b8;--pri:#7fa2ff;--cct:#23305a;--line:#2a3348}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{background:var(--pri);color:#fff;padding:16px 16px 12px}
+@media (prefers-color-scheme:dark){header{background:#1f3f8f}}
+header h1{margin:0;font-size:20px}
+header p{margin:4px 0 0;font-size:13px;opacity:.85}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 12px 6px;border-bottom:1px solid var(--line)}
+.seg{display:flex;gap:6px;overflow-x:auto}
+.seg button{flex:1 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 12px;font-size:14px;font-weight:600}
+.seg button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.tog{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.tog label{display:flex;align-items:center;gap:6px;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 10px}
+.wrap{padding:12px}
+details.sp{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px}
+details.sp summary{padding:12px 14px;font-weight:600;font-size:15px;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px}
+.chip{display:flex;align-items:center;border:1px solid var(--line);border-radius:18px;background:var(--bg);font-size:13px;overflow:hidden}
+.chip .n{padding:7px 4px 7px 10px;background:none;border:0;color:var(--ink);font-size:13px}
+.chip.sel{border-color:var(--pri);background:var(--cct)}
+.chip.sel .n{font-weight:700}
+.chip .st{border:0;background:none;padding:7px 9px 7px 4px;font-size:15px;color:var(--mut)}
+.chip .st.f{color:var(--acc)}
+.mini{display:flex;gap:8px;padding:0 12px 12px}
+.mini button{font-size:12px;border:1px solid var(--line);background:none;color:var(--pri);border-radius:14px;padding:5px 10px}
+h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
+.g{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;display:flex;gap:12px}
+.g.past{opacity:.5}
+.g.next{border:2px solid var(--acc)}
+.g.cond{border-style:dashed}
+.tm{min-width:58px;text-align:center}
+.tm b{display:block;font-size:19px}
+.tm small{font-size:11px;color:var(--mut)}
+.bd{flex:1;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.sport{font-weight:700;font-size:14px}
+.fstar{border:0;background:none;font-size:20px;line-height:1;color:var(--mut);padding:0 2px}
+.fstar.f{color:var(--acc)}
+.vs{margin:6px 0;font-size:15px}
+.vs .c{background:var(--cct);color:var(--pri);font-weight:800;padding:1px 6px;border-radius:6px}
+.meta{font-size:12px;color:var(--mut);line-height:1.5}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;margin:4px 4px 0 0;background:var(--bg);border:1px solid var(--line)}
+.tag.you{background:var(--acc);color:#222;border-color:var(--acc)}
+.tag.cd{color:var(--mut)}
+.empty{text-align:center;color:var(--mut);padding:30px 10px}
+footer{font-size:11px;color:var(--mut);text-align:center;padding:10px 16px 30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>JISUDESC 2026 · CCT</h1>
+  <p>Horários dos jogos do CCT – Boletim 1 · AFFESC</p>
+</header>
+
+<div class="bar">
+  <div class="seg" id="days"></div>
+  <div class="tog">
+    <label><input type="checkbox" id="onlyFav"> Só favoritos ★</label>
+    <label><input type="checkbox" id="showCond" checked> Fases finais (se o CCT avançar)</label>
+  </div>
+</div>
+
+<div class="wrap">
+  <details class="sp" id="spBox">
+    <summary id="spSum">Esportes</summary>
+    <div class="mini"><button id="all">Mostrar todos</button><button id="none">Selecionar favoritos</button></div>
+    <div class="chips" id="chips"></div>
+  </details>
+  <div id="list"></div>
+</div>
+<footer>Toque no nome do esporte para filtrar e na ★ para favoritar. Horários "em sequência" seguem a ordem dos jogos anteriores. Confira sempre os boletins oficiais.</footer>
+
+<script>
+const DAYS={13:"Sexta-feira",14:"Sábado",15:"Domingo"};
+const QA="Quadra de areia";
+// s = esporte, d = dia, t = hora, a/b = equipes, l = local, f = fase, c = depende de classificação, n = observação
+const G=[
+// VÔLEI 4x4 MASCULINO
+{s:"Vôlei 4x4 Masculino",d:13,t:"13:30",a:"CCT",b:"CEPLAN",l:QA+" 3",f:"Classificatória (Grupo A)"},
+{s:"Vôlei 4x4 Masculino",d:13,t:"16:50",a:"REITORIA/CEAVI",b:"CCT",l:QA+" 3",f:"Classificatória (Grupo A)"},
+{s:"Vôlei 4x4 Masculino",d:14,t:"09:00",a:"1º A",b:"2º B",l:QA+" 2/3",f:"Semifinal",c:1,n:"Outra semi no mesmo horário: 1º B x 2º A"},
+{s:"Vôlei 4x4 Masculino",d:14,t:"10:00",a:"Perdedores das semis",b:"",l:QA+" 3",f:"Disputa de 3º",c:1},
+{s:"Vôlei 4x4 Masculino",d:14,t:"11:00",a:"Vencedores das semis",b:"",l:QA+" 3",f:"Final",c:1},
+// VÔLEI 4x4 MISTO
+{s:"Vôlei 4x4 Misto",d:13,t:"10:50",a:"CCT",b:"REITORIA",l:QA+" 3",f:"Classificatória (Grupo A)"},
+{s:"Vôlei 4x4 Misto",d:14,t:"15:30",a:"CEAD",b:"CCT",l:QA+" 3",f:"Classificatória (Grupo A)"},
+{s:"Vôlei 4x4 Misto",d:15,t:"09:00",a:"Semifinais",b:"",l:QA+" 2/3",f:"Semifinal",c:1,n:"1º M x melhor 2º · 2º M x 3º M"},
+{s:"Vôlei 4x4 Misto",d:15,t:"10:30",a:"Disputa de 3º e Final",b:"",l:QA+" 2/3",f:"Final",c:1},
+// BEACH TENNIS MASCULINO
+{s:"Beach Tennis Masculino",d:13,t:"13:30",a:"CEART1",b:"CCT",l:QA+" 1",f:"Classificatória (Grupo A)"},
+{s:"Beach Tennis Masculino",d:13,t:"13:50",a:"CEFID2",b:"CCT/ESAG",l:QA+" 2",f:"Classificatória (Grupo B)"},
+{s:"Beach Tennis Masculino",d:13,t:"14:10",a:"CEART2",b:"CCT",l:QA+" 1",f:"Classificatória (Grupo A)"},
+{s:"Beach Tennis Masculino",d:13,t:"14:50",a:"ESAG",b:"CCT",l:QA+" 2",f:"Classificatória (Grupo A)"},
+{s:"Beach Tennis Masculino",d:13,t:"15:30",a:"CERES",b:"CCT/ESAG",l:QA+" 2",f:"Classificatória (Grupo B)"},
+{s:"Beach Tennis Masculino",d:13,t:"16:30",a:"Semifinais",b:"",l:QA+" 2",f:"Semifinal",c:1,n:"16:30 2º M x 3º M · 16:50 1º M x melhor 2º"},
+{s:"Beach Tennis Masculino",d:13,t:"17:15",a:"Disputa de 3º",b:"",l:QA+" 2",f:"Disputa de 3º",c:1},
+{s:"Beach Tennis Masculino",d:13,t:"17:40",a:"Final",b:"",l:QA+" 2",f:"Final",c:1},
+// BEACH TENNIS MISTO
+{s:"Beach Tennis Misto",d:13,t:"10:25",a:"CERES/REITORIA",b:"CCT",l:QA+" 3",f:"Classificatória (Grupo C)"},
+{s:"Beach Tennis Misto",d:13,t:"10:50",a:"FAED",b:"CCT",l:QA+" 3",f:"Classificatória (Grupo C)"},
+{s:"Beach Tennis Misto",d:14,t:"10:00",a:"Semifinais",b:"",l:QA+" 2",f:"Semifinal",c:1,n:"Semis às 10:00 e 10:30"},
+{s:"Beach Tennis Misto",d:14,t:"11:00",a:"Disputa de 3º (11:00) e Final (11:30)",b:"",l:QA+" 2",f:"Final",c:1},
+// BASQUETE
+{s:"Basquete 3x3 Masculino",d:14,t:"15:30",a:"CEAVI/FAED/CEFID",b:"CERES/CCT",l:"Quadra poliesportiva",f:"Grupo único – jogo 1"},
+{s:"Basquete 3x3 Masculino",d:14,t:"16:00",a:"REITORIA",b:"CERES/CCT",l:"Quadra poliesportiva",f:"Grupo único – jogo 2",n:"Só se o CERES/CCT perder o jogo 1"},
+{s:"Basquete 3x3 Masculino",d:14,t:"16:30",a:"REITORIA",b:"CERES/CCT",l:"Quadra poliesportiva",f:"Grupo único – jogo 3",n:"Só se o CERES/CCT vencer o jogo 1"},
+// FUTEBOL SUÍÇO
+{s:"Futebol Suíço Masculino",d:14,t:"10:00",a:"CCT/CEPLAN",b:"CEAVI/CERES/CAV/REITORIA/ESAG",l:"Campo suíço",f:"Grupo único – jogo 1"},
+{s:"Futebol Suíço Masculino",d:14,t:"15:00",a:"CEFID",b:"CCT/CEPLAN",l:"Campo suíço",f:"Grupo único – jogo 2",n:"Só se o CCT/CEPLAN perder o jogo 1"},
+{s:"Futebol Suíço Masculino",d:15,t:"09:30",a:"CEFID",b:"CCT/CEPLAN",l:"Campo suíço",f:"Grupo único – jogo 3",n:"Só se o CCT/CEPLAN vencer o jogo 1"},
+{s:"Futebol Suíço Sênior",d:14,t:"11:00",a:"CAV",b:"CCT/CEFID/FAED/CEART",l:"Campo suíço",f:"Jogo único"},
+// BOCHA
+{s:"Bocha Masculino",d:13,t:"16:00",a:"CEO",b:"CESFI/CCT",l:"Cancha",f:"Quartas"},
+{s:"Bocha Masculino",d:13,t:"17:30",a:"Semifinal",b:"",l:"Cancha",f:"Semifinal",c:1,n:"Contra o vencedor de CEART2 x CESFI"},
+{s:"Bocha Masculino",d:14,t:"13:30",a:"Disputa de 3º (13:30) e Final (14:30)",b:"",l:"Cancha",f:"Final",c:1},
+{s:"Bocha Feminino",d:13,t:"10:20",a:"CCT",b:"CESFI/CEAVI",l:"Cancha",f:"Oitavas"},
+{s:"Bocha Feminino",d:14,t:"10:40",a:"CEO",b:"Vencedor CCT x CESFI/CEAVI",l:"Cancha",f:"Quartas",c:1},
+{s:"Bocha Feminino",d:14,t:"15:30",a:"Semifinal",b:"",l:"Cancha",f:"Semifinal",c:1,n:"Disputa de 3º às 17:30"},
+{s:"Bocha Feminino",d:15,t:"09:30",a:"Final",b:"",l:"Cancha",f:"Final",c:1},
+// SINUCA
+{s:"Sinuca Masculino",d:13,t:"14:00",a:"CEART/FAED",b:"CCT",l:"Sala de jogos – mesa 1",f:"Oitavas"},
+{s:"Sinuca Masculino",d:13,t:"15:30",a:"Quartas",b:"",l:"Sala de jogos – mesa 1",f:"Quartas",c:1,n:"Contra o vencedor de CAV1 x CESFI1"},
+{s:"Sinuca Masculino",d:13,t:"16:30",a:"Semifinal",b:"",l:"Sala de jogos",f:"Semifinal",c:1},
+{s:"Sinuca Masculino",d:13,t:"17:00",a:"Disputa de 3º e Final",b:"",l:"Sala de jogos",f:"Final",c:1},
+{s:"Sinuca Feminino",d:14,t:"13:50",a:"CEAD1",b:"CCT/CESFI",l:"Sala de jogos – mesa 1",f:"Classificatória (Grupo B)"},
+{s:"Sinuca Feminino",d:14,t:"14:50",a:"CEAD2",b:"CCT/CESFI",l:"Sala de jogos – mesa 1",f:"Classificatória (Grupo B)"},
+{s:"Sinuca Feminino",d:14,t:"15:40",a:"Semifinais",b:"",l:"Sala de jogos",f:"Semifinal",c:1},
+{s:"Sinuca Feminino",d:14,t:"16:10",a:"Disputa de 3º e Final",b:"",l:"Sala de jogos",f:"Final",c:1},
+// TÊNIS DE CAMPO
+{s:"Tênis de Campo Feminino",d:13,t:"14:15",a:"CCT",b:"CEFID",l:"Quadra de tênis",f:"Classificatória (Grupo A)"},
+{s:"Tênis de Campo Feminino",d:13,t:"15:45",a:"CESFI",b:"CCT",l:"Quadra de tênis",f:"Classificatória (Grupo A)"},
+{s:"Tênis de Campo Feminino",d:14,t:"09:00",a:"Semifinais",b:"",l:"Quadra de tênis",f:"Semifinal",c:1,n:"09:00 1º A x 2º B · 10:00 1º B x 2º A"},
+{s:"Tênis de Campo Feminino",d:14,t:"14:30",a:"Final",b:"",l:"Quadra de tênis",f:"Final",c:1},
+// TOTÓ
+{s:"Totó Masculino",d:13,t:"14:20",a:"CAV1",b:"CCT",l:"Local a definir – mesa 1",f:"Classificatória (Grupo B)"},
+{s:"Totó Masculino",d:13,t:"15:00",a:"CCT",b:"CEART1",l:"Local a definir – mesa 2",f:"Classificatória (Grupo B)"},
+{s:"Totó Masculino",d:13,t:"15:40",a:"CCT",b:"REITORIA",l:"Local a definir – mesa 2",f:"Classificatória (Grupo B)"},
+{s:"Totó Masculino",d:13,t:"16:00",a:"Semifinais",b:"",l:"Local a definir",f:"Semifinal",c:1,n:"Disputa de 3º e final às 16:20"},
+{s:"Totó Feminino",d:13,t:"17:00",a:"CCT/CEAD",b:"CEAD",l:"Local a definir – mesa 1",f:"Classificatória (Grupo A)"},
+{s:"Totó Feminino",d:13,t:"17:20",a:"CCT/CEAD",b:"CEART",l:"Local a definir – mesa 1",f:"Classificatória (Grupo A)"},
+{s:"Totó Feminino",d:13,t:"17:40",a:"Semifinais",b:"",l:"Local a definir",f:"Semifinal",c:1,n:"Disputa de 3º e final às 18:00"},
+// TRUCO
+{s:"Truco",d:13,t:"14:00",a:"CCT1",b:"REITORIA/CEPLAN",l:"Salão 2 – mesa 7",f:"Classificatória (Grupo D)"},
+{s:"Truco",d:13,t:"14:00",a:"ESAG1",b:"CCT2",l:"Salão 2 – mesa 4",f:"Classificatória (Grupo B)"},
+{s:"Truco",d:13,t:"seq",a:"CEPLAN2",b:"CCT2",l:"Salão 2 – mesa 4",f:"Classificatória (Grupo B) – 2ª rodada"},
+{s:"Truco",d:13,t:"seq",a:"CERES",b:"CCT2",l:"Salão 2 – mesa 3",f:"Classificatória (Grupo B) – 3ª rodada"},
+{s:"Truco",d:13,t:"seq",a:"CEAD",b:"CCT1",l:"Salão 2 – mesa 7",f:"Classificatória (Grupo D) – 3ª rodada"},
+{s:"Truco",d:13,t:"seq",a:"Quartas, semis e final",b:"",l:"Salão 2",f:"Eliminatórias",c:1},
+// CANASTRA
+{s:"Canastra",d:14,t:"08:30",a:"CEO1",b:"CCT",l:"Salão 2 – mesa 1",f:"16 avos"},
+{s:"Canastra",d:14,t:"09:15",a:"CERES1",b:"Vencedor CEO1 x CCT",l:"Salão 2 – mesa 1",f:"Oitavas",c:1,n:"Depois seguem quartas, semi e final em sequência"},
+// DOMINÓ
+{s:"Dominó",d:14,t:"13:30",a:"REIT3",b:"CCT/CEART",l:"Salão 2 – mesa 8",f:"16 avos"},
+{s:"Dominó",d:14,t:"14:15",a:"Vencedor CEFID1 x CEAVI2",b:"CCT1",l:"Salão 2 – mesa 4",f:"Oitavas"},
+{s:"Dominó",d:14,t:"14:15",a:"CCT2",b:"REIT2",l:"Salão 2 – mesa 6",f:"Oitavas"},
+{s:"Dominó",d:14,t:"seq",a:"Quartas, semis e final",b:"",l:"Salão 2",f:"Eliminatórias",c:1},
+// FIFA
+{s:"FIFA",d:14,t:"08:45",a:"CCT",b:"CEART",l:"Sala de jogos",f:"Classificatória (Grupo C)"},
+{s:"FIFA",d:14,t:"10:45",a:"CCT",b:"CESFI",l:"Sala de jogos",f:"Classificatória (Grupo C)"},
+{s:"FIFA",d:14,t:"11:00",a:"Semifinais",b:"",l:"Sala de jogos",f:"Semifinal",c:1,n:"Semis 11:00 e 11:15 · 3º lugar 11:30 · Final 11:45"},
+// INDIVIDUAIS
+{s:"Corrida Rústica",d:14,t:"07:30",a:"Concentração",b:"",l:"Em frente à casa de chá",f:"Todos os atletas",n:"CCT: Alessandro Siqueira, Alex Bellucco do Carmo, Diogo H. Figueiredo"},
+{s:"Corrida Rústica",d:14,t:"08:00",a:"Largada feminina",b:"",l:"Em frente à casa de chá",f:"Feminino",n:"CCT: Ana Borges de Azevedo, Ana Carolina Scharf da Silva, Francielle K. Boeing, Ketry G. F. dos Passos, Regina H. Munhoz"},
+{s:"Corrida Rústica",d:14,t:"08:20",a:"Largada masculina",b:"",l:"Em frente à casa de chá",f:"Masculino",n:"CCT: Alessandro Siqueira, Alex Bellucco do Carmo, Diogo H. Figueiredo"},
+{s:"Natação",d:14,t:"14:00",a:"Provas de natação",b:"",l:"AFFESC (14:00 – 15:00)",f:"Masculino e feminino",n:"CCT: Carlos Raphael Rocha"},
+{s:"Taco Masculino",d:14,t:"13:30",a:"Chamada das duplas e sorteio",b:"",l:"Gramado",f:"Jogos até 18:00",n:"CCT: Julio Cesar de Oliveira Zimmermann"},
+{s:"Xadrez",d:15,t:"09:00",a:"Congresso técnico",b:"",l:"Salão de jogos",f:"Início do torneio",n:"CCT: Julio Cesar de Oliveira Zimmermann"},
+// GINCANA
+{s:"Gincana",d:13,t:"11:00",a:"Qual é a música?",b:"",l:"Salão ao lado da CCO",f:"Prova"},
+{s:"Gincana",d:13,t:"14:30",a:"Enche o balde",b:"",l:"Quadra poliesportiva",f:"Prova"},
+{s:"Gincana",d:13,t:"15:30",a:"Transporte de algodão",b:"",l:"Quadra poliesportiva",f:"Prova"},
+{s:"Gincana",d:13,t:"16:00",a:"Transforme em múmia",b:"",l:"Quadra poliesportiva",f:"Prova"},
+{s:"Gincana",d:13,t:"17:00",a:"Bexiga grudada",b:"",l:"Quadra poliesportiva",f:"Prova"},
+{s:"Gincana",d:14,t:"10:00",a:"Acerte o copo",b:"",l:"Quadra poliesportiva",f:"Prova"},
+{s:"Gincana",d:14,t:"11:00",a:"Corrida do canudinho",b:"",l:"Quadra poliesportiva",f:"Prova"},
+{s:"Gincana",d:14,t:"14:00",a:"Não pode rir",b:"",l:"Piscina AFFESC",f:"Prova"},
+{s:"Gincana",d:14,t:"15:30",a:"Boliche reciclável",b:"",l:"Piscina AFFESC",f:"Prova"},
+{s:"Gincana",d:14,t:"16:30",a:"Desmonta e monta",b:"",l:"Piscina AFFESC",f:"Prova"},
+];
+const YOU=new Set(["Vôlei 4x4 Masculino","Vôlei 4x4 Misto"]);
+const SPORTS=[...new Set(G.map(g=>g.s))];
+
+function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let fav=new Set(load("jis_fav",[...YOU]));
+let sel=new Set(load("jis_sel",[]));
+let day=load("jis_day","all");
+const onlyFav=document.getElementById("onlyFav"), showCond=document.getElementById("showCond");
+onlyFav.checked=load("jis_of",false); showCond.checked=load("jis_sc",true);
+
+function persist(){save("jis_fav",[...fav]);save("jis_sel",[...sel]);save("jis_day",day);save("jis_of",onlyFav.checked);save("jis_sc",showCond.checked)}
+
+function renderDays(){
+  const el=document.getElementById("days");el.innerHTML="";
+  [["all","Todos"],["13","Sexta-feira"],["14","Sábado"],["15","Domingo"]].forEach(([k,l])=>{
+    const b=document.createElement("button");b.textContent=l;if(String(day)===k)b.className="on";
+    b.onclick=()=>{day=k;persist();renderAll()};el.appendChild(b);
+  });
+}
+function renderChips(){
+  const el=document.getElementById("chips");el.innerHTML="";
+  SPORTS.forEach(s=>{
+    const c=document.createElement("div");c.className="chip"+(sel.has(s)?" sel":"");
+    const n=document.createElement("button");n.className="n";n.textContent=s;
+    n.onclick=()=>{sel.has(s)?sel.delete(s):sel.add(s);persist();renderAll()};
+    const st=document.createElement("button");st.className="st"+(fav.has(s)?" f":"");st.textContent=fav.has(s)?"★":"☆";
+    st.setAttribute("aria-label","Favoritar "+s);
+    st.onclick=()=>{toggleFav(s)};
+    c.append(n,st);el.appendChild(c);
+  });
+  document.getElementById("spSum").textContent="Esportes "+(sel.size?`(${sel.size} selecionado${sel.size>1?"s":""})`:"(todos)")+" · ★ "+fav.size;
+}
+function toggleFav(s){fav.has(s)?fav.delete(s):fav.add(s);persist();renderAll()}
+
+function mins(t){if(t==="seq")return null;const[h,m]=t.split(":").map(Number);return h*60+m}
+function sortKey(g){const m=mins(g.t);return g.d*10000+(m===null?1439:m)}
+function esc(x){return x.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+function team(x){const e=esc(x);return /CCT/.test(x)?`<span class="c">${e}</span>`:e}
+
+function renderList(){
+  const now=new Date();
+  const nowDay=(now.getFullYear()===2026&&now.getMonth()===10)?now.getDate():null;
+  const nowMin=now.getHours()*60+now.getMinutes();
+  let list=G.filter(g=>(day==="all"||String(g.d)===String(day))
+    &&(!sel.size||sel.has(g.s))
+    &&(!onlyFav.checked||fav.has(g.s))
+    &&(showCond.checked||!g.c));
+  list.sort((a,b)=>sortKey(a)-sortKey(b));
+  const el=document.getElementById("list");el.innerHTML="";
+  if(!list.length){el.innerHTML=`<div class="empty">Nenhum jogo com esses filtros.${onlyFav.checked&&!fav.size?"<br>Toque na ☆ de um esporte para favoritá-lo.":""}</div>`;return}
+  const isPast=g=>{if(nowDay===null)return false;const m=mins(g.t);if(g.d<nowDay)return true;if(g.d>nowDay||m===null)return false;return m+40<nowMin};
+  let nextMarked=false,cur=null;
+  list.forEach(g=>{
+    if(g.d!==cur){cur=g.d;const h=document.createElement("h2");h.className="day";h.textContent=DAYS[g.d];el.appendChild(h)}
+    const past=isPast(g);let next=false;
+    if(!past&&!nextMarked&&nowDay!==null&&g.d>=nowDay&&mins(g.t)!==null){next=true;nextMarked=true}
+    const d=document.createElement("div");d.className="g"+(past?" past":"")+(next?" next":"")+(g.c?" cond":"");
+    const vs=g.b?`${team(g.a)} <span style="color:var(--mut)">x</span> ${team(g.b)}`:team(g.a);
+    d.innerHTML=`<div class="tm"><b>${g.t==="seq"?"seq.":g.t}</b><small>${g.t==="seq"?"em sequência":({13:"Sexta",14:"Sábado",15:"Domingo"})[g.d]}</small></div>
+    <div class="bd"><div class="top"><span class="sport">${esc(g.s)}</span><button class="fstar${fav.has(g.s)?" f":""}" aria-label="Favoritar">${fav.has(g.s)?"★":"☆"}</button></div>
+    <div class="vs">${vs}</div>
+    <div class="meta">📍 ${esc(g.l)}<br>${esc(g.f)}${g.n?"<br>"+esc(g.n):""}</div>
+    ${next?'<span class="tag" style="background:var(--acc);color:#222;border-color:var(--acc)">Próximo</span>':""}${YOU.has(g.s)?'<span class="tag you">Você joga</span>':""}${g.c?'<span class="tag cd">Se o CCT avançar</span>':""}</div>`;
+    d.querySelector(".fstar").onclick=()=>toggleFav(g.s);
+    el.appendChild(d);
+  });
+}
+function renderAll(){renderDays();renderChips();renderList()}
+document.getElementById("all").onclick=()=>{sel.clear();persist();renderAll()};
+document.getElementById("none").onclick=()=>{sel=new Set(fav);persist();renderAll()};
+onlyFav.onchange=()=>{persist();renderList()};
+showCond.onchange=()=>{persist();renderList()};
+renderAll();
+setInterval(renderList,60000);
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+</script>
+</body>
+</html>
