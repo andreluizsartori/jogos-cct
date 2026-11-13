@@ -20,8 +20,12 @@ header p{margin:3px 0 0;font-size:12px;opacity:.85}
 .ctr label{font-size:13px;opacity:.9}
 .ctr select{flex:1;font-size:16px;font-weight:700;padding:8px 10px;border-radius:10px;border:0;background:#fff;color:#1f3f8f}
 .tabs{display:flex;background:#1f3f8f;padding:0 8px}
-.tabs button{flex:1;border:0;background:none;color:#fff;opacity:.7;font-size:14px;font-weight:700;padding:10px 0;border-bottom:3px solid transparent}
+.tabs button{flex:1;border:0;background:none;color:#fff;opacity:.7;font-size:13.5px;font-weight:700;padding:10px 0;border-bottom:3px solid transparent}
 .tabs button.on{opacity:1;border-bottom-color:var(--acc)}
+.pod .pd{padding:2px 12px 12px}
+.pod .pd div{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:10px;font-size:15px;font-weight:600}
+.pod .pd div span{font-size:22px}
+.pod .pd div.me{background:var(--hl)}
 .hide{display:none!important}
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 12px 6px;border-bottom:1px solid var(--line)}
 .seg{display:flex;gap:6px;overflow-x:auto}
@@ -97,7 +101,7 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
   <div class="ctr"><label for="center">Meu centro</label><select id="center"></select></div>
 </header>
 <div class="inst hide" id="inst"></div>
-<nav class="tabs"><button id="tabJ" class="on">Jogos</button><button id="tabC">Classificação</button><button id="tabR">Regulamento</button></nav>
+<nav class="tabs"><button id="tabJ" class="on">Jogos</button><button id="tabC">Classificação</button><button id="tabP">Pódio</button><button id="tabR">Regulamento</button></nav>
 
 <div class="bar" id="barJ">
   <div class="seg" id="days"></div>
@@ -117,6 +121,7 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
   <div id="list"></div>
 </div>
 <div class="wrap hide" id="viewC"></div>
+<div class="wrap hide" id="viewP"></div>
 <div class="wrap hide" id="viewR"></div>
 
 <div class="ov hide" id="ov"><div class="box"><h3>Qual é o seu centro?</h3><p>Os jogos dele ficam em destaque. Dá para trocar depois, lá em cima.</p><div class="grid" id="ovg"></div></div></div>
@@ -294,6 +299,20 @@ function bestOf(sp,grs,R){// 1ºs e 2ºs de grupos diferentes (Art. 7: igualar g
       const games=gr.games.filter(g=>!drop.includes(g.a)&&!drop.includes(g.b));return stats(gr.teams,games,R).find(o=>o.t===c.out[pos])}).filter(Boolean);
     const cr=crit(R);return L.sort((a,b)=>b.Pts-a.Pts||cr(a,b)).map(o=>o.t)};
   return{firsts:rank(1),seconds:rank(2)}}
+// casa resultados da planilha com jogos de mata-mata depois que os nomes foram definidos
+function ftype(x){x=String(x||"");if(/final/i.test(x)&&!/semi|quart|oitav/i.test(x))return"F";if(/disp|3º|3o lugar|terceiro/i.test(x))return"3";if(/semi|^sf$/i.test(x))return"S";if(/quart|^qf$/i.test(x))return"Q";if(/oitav|^of$/i.test(x))return"O";return null}
+function lateMatch(){let ch=false;
+  for(const[sp,rows]of Object.entries(LIVE)){const mine=G.filter(g=>g.s===sp&&!g.ind);
+    rows.forEach(x=>{if(!x.r)return;const A=nrm(x.t1),B=nrm(x.t2);
+      const g=mine.find(g=>!g.r&&((nrm(g.a)===A&&nrm(g.b)===B)||(nrm(g.a)===B&&nrm(g.b)===A)));
+      if(g){const rev=nrm(g.a)===B;const p=x.r.split(" x ");g.r=rev?p[1]+" x "+p[0]:x.r;g.det=rev?x.det.split(" ").map(s=>s.split("-").reverse().join("-")).join(" "):x.det;x.used=true;ch=true}});
+    const key=(d,t,f)=>d+"|"+t+"|"+f;const byG={},byR={};
+    mine.forEach(g=>{const f=ftype(g.f);if(!f||g.r)return;(byG[key(g.d,g.t,f)]=byG[key(g.d,g.t,f)]||[]).push(g)});
+    rows.forEach(x=>{const f=ftype(x.fase);if(!f||x.used||!x.d||!x.t)return;(byR[key(x.d,x.t,f)]=byR[key(x.d,x.t,f)]||[]).push(x)});
+    for(const k in byR){const gs=(byG[k]||[]).sort((a,b)=>a.o-b.o),xs=byR[k];if(gs.length!==xs.length)continue;
+      xs.forEach((x,i)=>{const g=gs[i];if(isReal(x.t1)&&isReal(x.t2)){g.a=x.t1;g.b=x.t2;g.c=false}
+        if(x.r&&isReal(g.a)&&isReal(g.b)){g.r=x.r;g.det=x.det;ch=true}})}}
+  return ch}
 function resolveBracket(){
   for(const sp of SPORTS){const R=RU(sp);const mine=G.filter(g=>g.s===sp);
     for(let pass=0;pass<3;pass++){
@@ -341,6 +360,22 @@ function renderStd(){
   document.getElementById("ofc").onchange=e=>{save("jis_ofc",e.target.checked);renderStd()};
   el.querySelectorAll(".fstar").forEach(b=>b.onclick=()=>toggleFav(b.dataset.s))}
 
+// ===== PÓDIO =====
+function podium(sp){if(typeof PODIO!=="undefined"&&PODIO[sp])return PODIO[sp];
+  const mine=G.filter(g=>g.s===sp&&!g.ind);if(!mine.length)return null;
+  const fin=mine.find(g=>ftype(g.f)==="F"),d3=mine.find(g=>ftype(g.f)==="3");
+  if(fin){const w=winnerOf(fin);if(!w)return null;return[w,loserOf(fin),d3?winnerOf(d3):null]}
+  const uni=mine.find(g=>/Jogo único/i.test(g.f));if(uni){const w=winnerOf(uni);return w?[w,loserOf(uni),null]:null}
+  const grs=groupsOf(sp);if(grs.length===1){const R=RU(sp),c=clinched(grs[0],R);if(c.done)return[c.out[1],c.out[2],c.out[3]||null]}
+  return null}
+function renderPod(){const el=document.getElementById("viewP");const isMine=t=>center!=="ALL"&&t&&centersIn(t).has(center);
+  const done=[],open=[];[...SPORTS].sort((a,b)=>a.localeCompare(b,"pt")).forEach(sp=>{const p=podium(sp);(p?done:open).push([sp,p])});
+  let h="";
+  if(!done.length)h+=`<div class="empty">Nenhuma modalidade terminou ainda.<br>O pódio aparece aqui assim que sair o resultado da final.</div>`;
+  done.forEach(([sp,p])=>{h+=`<div class="tbl pod"><h3>${esc(sp)}</h3><div class="pd">`+["🥇","🥈","🥉"].map((m,i)=>p[i]?`<div class="${isMine(p[i])?"me":""}"><span>${m}</span>${hl(p[i])}</div>`:"").join("")+`</div></div>`});
+  if(open.length)h+=`<div class="empty" style="padding:12px 6px;text-align:left"><b>Ainda em disputa:</b> ${open.map(x=>esc(x[0])).join(", ")}</div>`;
+  h+=`<div class="empty" style="padding:6px">Resultados conforme a planilha oficial. Em caso de diferença, vale a divulgação da organização.</div>`;
+  el.innerHTML=h}
 // ===== REGULAMENTO =====
 function renderReg(){
   document.getElementById("viewR").innerHTML=`
@@ -375,12 +410,12 @@ function renderReg(){
   <div class="empty" style="padding:6px">Resumo feito a partir do Regulamento JISUDESC 2026. As regras das outras modalidades estão no PDF completo.</div>`}
 
 function setTab(t){tab=t;save("jis_tab",t);
-  ["J","C","R"].forEach(k=>{document.getElementById("tab"+k).className=k===t?"on":"";document.getElementById("view"+k).classList.toggle("hide",k!==t)});
+  ["J","C","P","R"].forEach(k=>{document.getElementById("tab"+k).className=k===t?"on":"";document.getElementById("view"+k).classList.toggle("hide",k!==t)});
   document.getElementById("barJ").classList.toggle("hide",t!=="J");window.scrollTo(0,0)}
-["J","C","R"].forEach(k=>document.getElementById("tab"+k).onclick=()=>setTab(k));
+["J","C","P","R"].forEach(k=>document.getElementById("tab"+k).onclick=()=>setTab(k));
 onlyFav.onchange=()=>{persist();renderList()};showCond.onchange=()=>{persist();renderList()};
 
-function renderAll(){resolveBracket();document.getElementById("remb").classList.toggle("hide",!fav.size);renderDays();renderChips();renderList();renderStd()}
+function renderAll(){resolveBracket();for(let i=0;i<4&&lateMatch();i++)resolveBracket();document.getElementById("remb").classList.toggle("hide",!fav.size);renderDays();renderChips();renderList();renderStd();renderPod()}
 // ===== RESULTADOS AO VIVO (planilha oficial do chaveamento) =====
 const SHEET_ID="1ZKNnBW2bFo7ZUFw4_LpUEcmrlPmJ8FsPdWsER8a18cI";
 const TABS={"Basquete 3x3":"Basquete 3x3 Masculino","fut7":"Futebol Suíço Masculino",
@@ -410,14 +445,15 @@ function rowsToGames(rows){const out=[];
       if(wo){r=L.some(x=>/W/i.test(x))?"W.O. x vitória":"vitória x W.O."}
       else if(L.length===1&&R.length===1)r=`${L[0]} x ${R[0]}`;
       else if(L.length>1&&L.length===R.length){let a=0,b=0;const p=[];L.forEach((x,i)=>{p.push(x+"-"+R[i]);+x>+R[i]?a++:b++});r=`${a} x ${b}`;det=p.join(" ")}
-      out.push({t1,t2,r,det,d,t})})});
+      out.push({t1,t2,r,det,d,t,fase:row[k+1]||""})})});
   return out}
 const realTeam=x=>centersIn(x).size>0&&!/^(VJ|PJ|[VP]\d|\d|MELHOR|PERDEDOR|VENCEDOR)/i.test(x.trim());
+let LIVE={};
 function applyLive(tabs){
-  G.forEach((g,i)=>Object.assign(g,BASE[i]));
+  G.forEach((g,i)=>Object.assign(g,BASE[i]));LIVE={};
   let used=0;
   for(const[tab,csv]of Object.entries(tabs)){const sp=TABS[tab];if(!sp||!csv)continue;
-    const games=rowsToGames(csvParse(csv)),mine=G.filter(g=>g.s===sp);const done=new Set();let hits=0;
+    const games=rowsToGames(csvParse(csv)),mine=G.filter(g=>g.s===sp);const done=new Set();let hits=0;LIVE[sp]=games;
     games.forEach(x=>{const A=nrm(x.t1),B=nrm(x.t2);
       let g=mine.find(g=>!done.has(g)&&nrm(g.a)===A&&nrm(g.b)===B),rev=false;
       if(!g){g=mine.find(g=>!done.has(g)&&nrm(g.a)===B&&nrm(g.b)===A);rev=!!g}

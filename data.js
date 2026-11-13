@@ -369,3 +369,7 @@ const STD = [
  {s:"Basquete 3x3 Masculino",tipo:"pts",grupos:[
   {n:"Grupo único",cls:"Rodízio simples – campeão é o 1º",q:1,times:["CEAVI/FAED/CEFID","CERES/CCT","REITORIA"],jogos:[["CEAVI/FAED/CEFID","CERES/CCT",null]],pend:"Jogo 2 (16:00): REITORIA x perdedor do jogo 1 · Jogo 3 (16:30): REITORIA x vencedor do jogo 1"}]},
 ];
+
+// Pódio informado manualmente (provas individuais ou correções): "Esporte": ["1º","2º","3º"]
+const PODIO = {
+};
