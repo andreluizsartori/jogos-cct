@@ -4,7 +4,8 @@ const BOLETIM = "Boletim 1";
 
 const CENTROS = ["CAV","CCT","CEAD","CEART","CEAVI","CEFID","CEO","CEPLAN","CERES","CESFI","CESMO","ESAG","FAED","REITORIA"];
 
-// Jogos: [esporte, dia, hora ("seq" = em sequência), time A, time B, local, fase, condicional(1 = depende de classificação), observação, resultado]
+// Jogos: [esporte, dia, hora ("seq" = em sequência), time A, time B, local, fase, condicional(1 = depende de classificação), observação, resultado "2 x 1", parciais "18-15 12-18 15-10"]
+// O resultado posto aqui aparece no cartão do jogo E entra automaticamente na classificação.
 const QA = "Quadra de areia ";
 const SJ = "Sala de jogos";
 const S2 = "Salão 2";
@@ -97,8 +98,8 @@ const RAW = [
 ["Bocha Masculino",13,"14:20","CEFID","REITORIA","Cancha","Quartas"],
 ["Bocha Masculino",13,"15:10","CEART2","CESFI","Cancha","Quartas"],
 ["Bocha Masculino",13,"16:00","CEO","CESFI/CCT","Cancha","Quartas"],
-["Bocha Masculino",13,"16:50","Vencedor CEAVI x CEART1","Vencedor CEFID x REITORIA","Cancha","Semifinal",1],
-["Bocha Masculino",13,"17:30","Vencedor CEART2 x CESFI","Vencedor CEO x CESFI/CCT","Cancha","Semifinal",1],
+["Bocha Masculino",13,"16:50","Vencedor (CEAVI x CEART1)","Vencedor (CEFID x REITORIA)","Cancha","Semifinal",1],
+["Bocha Masculino",13,"17:30","Vencedor (CEART2 x CESFI)","Vencedor (CEO x CESFI/CCT)","Cancha","Semifinal",1],
 ["Bocha Masculino",14,"13:30","Perdedores das semifinais","","Cancha","Disputa de 3º",1],
 ["Bocha Masculino",14,"14:30","Vencedores das semifinais","","Cancha","Final",1],
 // BOCHA FEMININO
@@ -106,10 +107,10 @@ const RAW = [
 ["Bocha Feminino",13,"11:10","FAED","CEAVI","Cancha","Oitavas"],
 ["Bocha Feminino",14,"09:00","CEFID2","CEAD","Cancha","Quartas"],
 ["Bocha Feminino",14,"09:50","CEFID1","REITORIA","Cancha","Quartas"],
-["Bocha Feminino",14,"10:40","CEO","Vencedor CCT x CESFI/CEAVI","Cancha","Quartas",1],
-["Bocha Feminino",14,"11:30","CAV","Vencedor FAED x CEAVI","Cancha","Quartas",1],
-["Bocha Feminino",14,"15:30","Vencedor CEFID2 x CEAD","Vencedor do jogo do CEO","Cancha","Semifinal",1],
-["Bocha Feminino",14,"16:30","Vencedor CEFID1 x REITORIA","Vencedor do jogo do CAV","Cancha","Semifinal",1],
+["Bocha Feminino",14,"10:40","CEO","Vencedor (CCT x CESFI/CEAVI)","Cancha","Quartas",1],
+["Bocha Feminino",14,"11:30","CAV","Vencedor (FAED x CEAVI)","Cancha","Quartas",1],
+["Bocha Feminino",14,"15:30","Vencedor (CEFID2 x CEAD)","Vencedor do jogo do CEO","Cancha","Semifinal",1],
+["Bocha Feminino",14,"16:30","Vencedor (CEFID1 x REITORIA)","Vencedor do jogo do CAV","Cancha","Semifinal",1],
 ["Bocha Feminino",14,"17:30","Perdedores das semifinais","","Cancha","Disputa de 3º",1],
 ["Bocha Feminino",15,"09:30","Vencedores das semifinais","","Cancha","Final",1],
 // CANASTRA
@@ -122,28 +123,28 @@ const RAW = [
 ["Canastra",14,"08:30","REITORIA3","CEFID1",S2+" – mesa 7","16 avos"],
 ["Canastra",14,"08:30","REITORIA2","CESFI1",S2+" – mesa 8","16 avos"],
 ["Canastra",14,"08:30","CERES3","REITORIA4",S2+" – mesa 9","16 avos"],
-["Canastra",14,"09:15","CERES1","Vencedor CEO1 x CCT",S2+" – mesa 1","Oitavas"],
-["Canastra",14,"09:15","FAED","Vencedor CERES2 x ESAG2",S2+" – mesa 2","Oitavas"],
-["Canastra",14,"09:15","CESFI2","Vencedor REITORIA1 x CEART",S2+" – mesa 3","Oitavas"],
-["Canastra",14,"09:15","Vencedor CEAD1 x CEAD2","Vencedor CEO2 x CEAVI",S2+" – mesa 4","Oitavas",1],
-["Canastra",14,"09:15","CAV1","Vencedor CESFI/CEO x ESAG1",S2+" – mesa 5","Oitavas"],
-["Canastra",14,"09:15","CESFI3","Vencedor REITORIA3 x CEFID1",S2+" – mesa 6","Oitavas"],
-["Canastra",14,"09:15","CEFID2","Vencedor REITORIA2 x CESFI1",S2+" – mesa 7","Oitavas"],
-["Canastra",14,"09:15","Vencedor CERES3 x REITORIA4","CAV2",S2+" – mesa 8","Oitavas"],
+["Canastra",14,"09:15","CERES1","Vencedor (CEO1 x CCT)",S2+" – mesa 1","Oitavas"],
+["Canastra",14,"09:15","FAED","Vencedor (CERES2 x ESAG2)",S2+" – mesa 2","Oitavas"],
+["Canastra",14,"09:15","CESFI2","Vencedor (REITORIA1 x CEART)",S2+" – mesa 3","Oitavas"],
+["Canastra",14,"09:15","Vencedor (CEAD1 x CEAD2)","Vencedor (CEO2 x CEAVI)",S2+" – mesa 4","Oitavas",1],
+["Canastra",14,"09:15","CAV1","Vencedor (CESFI/CEO x ESAG1)",S2+" – mesa 5","Oitavas"],
+["Canastra",14,"09:15","CESFI3","Vencedor (REITORIA3 x CEFID1)",S2+" – mesa 6","Oitavas"],
+["Canastra",14,"09:15","CEFID2","Vencedor (REITORIA2 x CESFI1)",S2+" – mesa 7","Oitavas"],
+["Canastra",14,"09:15","Vencedor (CERES3 x REITORIA4)","CAV2",S2+" – mesa 8","Oitavas"],
 ["Canastra",14,"seq","Quartas, semifinais e final","",S2,"Eliminatórias",1],
 // DOMINÓ
 ["Dominó",14,"13:30","CEAVI1","REITORIA1",S2+" – mesa 1","16 avos"],
 ["Dominó",14,"13:30","CEFID1","CEAVI2",S2+" – mesa 4","16 avos"],
 ["Dominó",14,"13:30","CEO","CERES1",S2+" – mesa 5","16 avos"],
 ["Dominó",14,"13:30","REITORIA3","CCT/CEART",S2+" – mesa 8","16 avos"],
-["Dominó",14,"14:15","FAED","Vencedor CEAVI1 x REITORIA1",S2+" – mesa 1","Oitavas"],
+["Dominó",14,"14:15","FAED","Vencedor (CEAVI1 x REITORIA1)",S2+" – mesa 1","Oitavas"],
 ["Dominó",14,"14:15","CEART","CAV",S2+" – mesa 2","Oitavas"],
 ["Dominó",14,"14:15","CEFID2","REITORIA4",S2+" – mesa 3","Oitavas"],
-["Dominó",14,"14:15","Vencedor CEFID1 x CEAVI2","CCT1",S2+" – mesa 4","Oitavas"],
-["Dominó",14,"14:15","CERES2","Vencedor CEO x CERES1",S2+" – mesa 5","Oitavas"],
+["Dominó",14,"14:15","Vencedor (CEFID1 x CEAVI2)","CCT1",S2+" – mesa 4","Oitavas"],
+["Dominó",14,"14:15","CERES2","Vencedor (CEO x CERES1)",S2+" – mesa 5","Oitavas"],
 ["Dominó",14,"14:15","CCT2","REITORIA2",S2+" – mesa 6","Oitavas"],
 ["Dominó",14,"14:15","CESFI/CESMO","CERES/CESFI",S2+" – mesa 7","Oitavas"],
-["Dominó",14,"14:15","Vencedor REITORIA3 x CCT/CEART","CEAD",S2+" – mesa 8","Oitavas"],
+["Dominó",14,"14:15","Vencedor (REITORIA3 x CCT/CEART)","CEAD",S2+" – mesa 8","Oitavas"],
 ["Dominó",14,"seq","Quartas, semifinais e final","",S2,"Eliminatórias",1],
 // FIFA
 ["FIFA",14,"08:00","CEAVI1","CEFID2",SJ,"Grupo A"],
@@ -171,10 +172,10 @@ const RAW = [
 ["Sinuca Masculino",13,"14:30","ESAG1","CEO",SJ+" – mesa 2","Oitavas"],
 ["Sinuca Masculino",13,"15:00","REITORIA/CESFI","CAV2",SJ+" – mesa 1","Oitavas"],
 ["Sinuca Masculino",13,"15:00","CEFID","FAED1",SJ+" – mesa 2","Oitavas"],
-["Sinuca Masculino",13,"15:30","Vencedor CAV1 x CESFI1","Vencedor CEART/FAED x CCT",SJ+" – mesa 1","Quartas",1],
-["Sinuca Masculino",13,"15:30","Vencedor CEAD x CERES","Vencedor ESAG2 x FAED2",SJ+" – mesa 2","Quartas",1],
-["Sinuca Masculino",13,"16:00","Vencedor CEPLAN x CEART1","Vencedor REITORIA/CESFI x CAV2",SJ+" – mesa 1","Quartas",1],
-["Sinuca Masculino",13,"16:00","Vencedor ESAG1 x CEO","Vencedor CEFID x FAED1",SJ+" – mesa 2","Quartas",1],
+["Sinuca Masculino",13,"15:30","Vencedor (CAV1 x CESFI1)","Vencedor (CEART/FAED x CCT)",SJ+" – mesa 1","Quartas",1],
+["Sinuca Masculino",13,"15:30","Vencedor (CEAD x CERES)","Vencedor (ESAG2 x FAED2)",SJ+" – mesa 2","Quartas",1],
+["Sinuca Masculino",13,"16:00","Vencedor (CEPLAN x CEART1)","Vencedor (REITORIA/CESFI x CAV2)",SJ+" – mesa 1","Quartas",1],
+["Sinuca Masculino",13,"16:00","Vencedor (ESAG1 x CEO)","Vencedor (CEFID x FAED1)",SJ+" – mesa 2","Quartas",1],
 ["Sinuca Masculino",13,"16:30","Semifinais","",SJ,"Semifinal",1],
 ["Sinuca Masculino",13,"17:00","Disputa de 3º e final","",SJ,"Final",1],
 // SINUCA FEMININO
@@ -195,8 +196,8 @@ const RAW = [
 ["Tênis de Campo Masculino",13,"10:30","REITORIA","CEART1","Quadra de tênis","Quartas"],
 ["Tênis de Campo Masculino",13,"11:30","CEAVI","CEART2","Quadra de tênis","Quartas"],
 ["Tênis de Campo Masculino",13,"13:15","CERES","FAED","Quadra de tênis","Quartas"],
-["Tênis de Campo Masculino",14,"11:00","Vencedor CEFID1 x CEFID2","Vencedor REITORIA x CEART1","Quadra de tênis","Semifinal",1],
-["Tênis de Campo Masculino",14,"13:30","Vencedor CEAVI x CEART2","Vencedor CERES x FAED","Quadra de tênis","Semifinal",1],
+["Tênis de Campo Masculino",14,"11:00","Vencedor (CEFID1 x CEFID2)","Vencedor (REITORIA x CEART1)","Quadra de tênis","Semifinal",1],
+["Tênis de Campo Masculino",14,"13:30","Vencedor (CEAVI x CEART2)","Vencedor (CERES x FAED)","Quadra de tênis","Semifinal",1],
 ["Tênis de Campo Masculino",14,"15:30","Perdedores das semifinais","","Quadra de tênis","Disputa de 3º",1],
 ["Tênis de Campo Masculino",14,"16:30","Vencedores das semifinais","","Quadra de tênis","Final",1],
 ["Tênis de Campo Feminino",13,"14:15","CCT","CEFID","Quadra de tênis","Grupo A"],

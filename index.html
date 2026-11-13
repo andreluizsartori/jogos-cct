@@ -58,7 +58,7 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 .fstar{border:0;background:none;font-size:20px;line-height:1;color:var(--mut);padding:0 2px}
 .vs{margin:6px 0;font-size:15px;overflow-wrap:anywhere}
 .c{background:var(--hl);color:var(--pri);font-weight:800;padding:1px 6px;border-radius:6px}
-.res{display:inline-block;margin-left:6px;font-weight:800;background:#1f3f8f;color:#fff;border-radius:6px;padding:1px 7px;font-size:14px}
+.res{display:inline-block;margin:0 4px;font-weight:800;background:#1f3f8f;color:#fff;border-radius:6px;padding:1px 7px;font-size:14px}
 .meta{font-size:12px;color:var(--mut);line-height:1.5}
 .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;margin:4px 4px 0 0;background:var(--bg);border:1px solid var(--line);color:var(--mut)}
 .tag.nx{background:var(--acc);color:#222;border-color:var(--acc)}
@@ -128,9 +128,9 @@ function mins(t){if(!/^\d/.test(t))return null;const[h,m]=t.split(":").map(Numbe
 // Monta a lista de jogos
 const G=[];
 const last={};
-RAW.forEach(r=>{const[s,d,t,a,b,l,f,c,n,res]=r;const k=s+d;let o=mins(t);
+RAW.forEach(r=>{const[s,d,t,a,b,l,f,c,n,res,det]=r;const k=s+d;let o=mins(t);
   if(o===null){o=(last[k]||0)+1}last[k]=o;
-  G.push({s,d,t,a,b,l,f,c:!!c,n:n||"",r:res||"",o,cs:new Set([...centersIn(a),...centersIn(b)])})});
+  G.push({s,d,t,a,b,l,f,c:!!c,n:n||"",r:res||"",det:det||"",o,cs:new Set([...centersIn(a),...centersIn(b)])})});
 IND.forEach(r=>{const[s,d,t,a,l,f,who]=r;
   G.push({s,d,t,a,b:"",l,f,c:false,n:"",r:"",o:mins(t),ind:who,cs:new Set(who==="ALL"||!who?[]:Object.keys(who)),all:who==="ALL"||!who})});
 // Centros que disputam cada esporte (para mostrar fases finais)
@@ -177,7 +177,7 @@ function renderList(){
   list.sort((a,b)=>a.d-b.d||a.o-b.o);
   const el=document.getElementById("list");el.innerHTML="";
   if(!list.length){el.innerHTML=`<div class="empty">Nenhum jogo com esses filtros.${onlyFav.checked&&!fav.size?"<br>Toque na ☆ de um esporte para favoritá-lo.":""}</div>`;return}
-  const isPast=g=>{if(nowDay===null)return false;if(g.d!==nowDay)return g.d<nowDay;const m=mins(g.t);return m!==null&&m+40<nowMin};
+  const isPast=g=>{if(nowDay===null)return false;if(g.d!==nowDay)return g.d<nowDay;const m=mins(g.t);return m!==null&&m<=nowMin};
   let marked=false,cur=null;
   list.forEach(g=>{
     if(g.d!==cur){cur=g.d;const h=document.createElement("h2");h.className="day";h.textContent=DAYS[g.d];el.appendChild(h)}
@@ -187,11 +187,11 @@ function renderList(){
     if(g.ind&&g.ind!=="ALL"){if(center==="ALL"){const n=Object.values(g.ind).reduce((a,v)=>a+v.split(";").length,0);who=`${n} inscritos`}
       else if(g.ind[center])who=`${center}: `+g.ind[center].split(";").map(x=>x.trim()).join(", ")}
     if(g.all)who="Todos os centros";
-    const vs=g.b?`${hl(g.a)} <span style="color:var(--mut)">x</span> ${hl(g.b)}`:hl(g.a);
-    const d=document.createElement("div");d.className="g"+(past?" past":"")+(next?" next":"")+(g.c?" cond":"");
+    const vs=g.b?(g.r?`${hl(g.a)} <span class="res">${esc(g.r)}</span> ${hl(g.b)}`:`${hl(g.a)} <span style="color:var(--mut)">x</span> ${hl(g.b)}`):hl(g.a)+(g.r?` <span class="res">${esc(g.r)}</span>`:"");
+    const d=document.createElement("div");d.className="g"+(past&&!g.r?" past":"")+(next?" next":"")+(g.c?" cond":"");
     d.innerHTML=`<div class="tm"><b>${g.t==="seq"?"seq.":esc(g.t)}</b><small>${g.t==="seq"?"em sequência":SHORT[g.d]}</small></div>
     <div class="bd"><div class="top"><span class="sport">${esc(g.s)}</span><span class="acts">${mins(g.t)!==null&&!g.r?`<a class="bell" href="${gcal(g)}" target="_blank" rel="noopener" aria-label="Adicionar à agenda">🔔</a>`:""}<button class="fstar${fav.has(g.s)?" f":""}" aria-label="Favoritar">${fav.has(g.s)?"★":"☆"}</button></span></div>
-    <div class="vs">${vs}${g.r?`<span class="res">${esc(g.r)}</span>`:""}</div>
+    <div class="vs">${vs}</div>${g.det?`<div class="meta">Sets: ${esc(g.det)}</div>`:""}
     <div class="meta">📍 ${esc(g.l)}<br>${esc(g.f)}${g.n?"<br>"+esc(g.n):""}${who?"<br>"+esc(who):""}</div>
     ${next?'<span class="tag nx">Próximo</span>':""}${g.c?'<span class="tag">Depende da classificação</span>':""}${g.r?'<span class="tag">Encerrado</span>':""}</div>`;
     d.querySelector(".fstar").onclick=()=>toggleFav(g.s);el.appendChild(d)})}
@@ -219,10 +219,14 @@ document.getElementById("remb").onclick=()=>{const r=makeIcs();if(!r)return;
 // Vôlei 4x4 e Basquete 3x3: vitória 2, derrota 1. Futebol suíço: vitória 3, empate 1, derrota 0.
 function setPts(det){let p=0,c=0;(det||"").split(/[\s,;]+/).forEach(x=>{const m=x.match(/^(\d+)-(\d+)$/);if(m){p+=+m[1];c+=+m[2]}});return[p,c]}
 function avg(a,b){return b===0?(a>0?Infinity:0):a/b}
-function table(g,tipo){
+function parseR(x){const m=String(x).match(/(\d+)\s*[x×-]\s*(\d+)/);return m?[+m[1],+m[2]]:null}
+function fromGames(sp,a,b){for(const g of G){if(g.s!==sp||!g.r)continue;
+  if(g.a===a&&g.b===b){const r=parseR(g.r);if(r)return[r,g.det]}
+  if(g.a===b&&g.b===a){const r=parseR(g.r);if(r)return[[r[1],r[0]],g.det.split(/[\s,;]+/).map(x=>x.split("-").reverse().join("-")).join(" ")]}}return[null,""]}
+function table(g,tipo,sp){
   const T={};g.times.forEach(t=>T[t]={t,J:0,V:0,E:0,D:0,P:0,C:0,SP:0,SC:0,Pts:0});
   const played=[];
-  g.jogos.forEach(([a,b,r,det])=>{if(!r||!T[a]||!T[b])return;const[x,y]=r,A=T[a],B=T[b];played.push([a,b,x,y]);
+  g.jogos.forEach(([a,b,r,det])=>{if(!r){[r,det]=fromGames(sp,a,b)}if(!r||!T[a]||!T[b])return;const[x,y]=r,A=T[a],B=T[b];played.push([a,b,x,y]);
     A.J++;B.J++;
     if(tipo==="sets"){A.SP+=x;A.SC+=y;B.SP+=y;B.SC+=x;const[p,c]=setPts(det);A.P+=p;A.C+=c;B.P+=c;B.C+=p}
     else{A.P+=x;A.C+=y;B.P+=y;B.C+=x}
@@ -250,13 +254,13 @@ function renderStd(){
   if(of)list=list.filter(m=>fav.has(m.s));
   if(of&&!list.length)h+=`<div class="empty">Nenhum esporte coletivo nos favoritos.<br>Toque na ☆ ao lado do nome de uma tabela para favoritá-la.</div>`;
   list.forEach(m=>m.grupos.forEach(g=>{
-    const L=table(g,m.tipo),gol=m.tipo==="gols";
+    const L=table(g,m.tipo,m.s),gol=m.tipo==="gols";
     const pp=m.tipo==="sets"?"Sets":gol?"Gols":"Pontos";
     h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>${esc(m.s)} · ${esc(g.n)}</span><button class="fstar${fav.has(m.s)?" f":""}" data-s="${esc(m.s)}" aria-label="Favoritar">${fav.has(m.s)?"★":"☆"}</button></h3><div class="sub">${esc(g.cls)}</div><table>
     <tr><th>#</th><th class="t">Equipe</th><th>Pts</th><th>J</th><th>V</th>${gol?"<th>E</th>":""}<th>D</th><th>${pp}</th><th>Saldo</th></tr>`;
     L.forEach((o,i)=>{const a=m.tipo==="sets"?o.SP:o.P,b=m.tipo==="sets"?o.SC:o.C,sd=a-b;
       h+=`<tr class="${isMine(o.t)?"me":""} ${i<g.q&&o.J?"q":""}"><td>${i+1}</td><td class="t">${esc(o.t)}</td><td><b>${o.Pts}</b></td><td>${o.J}</td><td>${o.V}</td>${gol?`<td>${o.E}</td>`:""}<td>${o.D}</td><td>${a}:${b}</td><td>${sd>0?"+":""}${sd}</td></tr>`});
-    h+=`</table><div class="gl">`+g.jogos.map(([a,b,r,det])=>`${hl(a)} ${r?`<b>${r[0]} x ${r[1]}</b>`:"x"} ${hl(b)}${det?` <span>(${esc(det)})</span>`:""}`).join("<br>")+(g.pend?`<br><i>${esc(g.pend)}</i>`:"")+`</div></div>`}));
+    h+=`</table><div class="gl">`+g.jogos.map(([a,b,r,det])=>{if(!r){[r,det]=fromGames(m.s,a,b)}return `${hl(a)} ${r?`<b>${r[0]} x ${r[1]}</b>`:"x"} ${hl(b)}${det?` <span>(${esc(det)})</span>`:""}`}).join("<br>")+(g.pend?`<br><i>${esc(g.pend)}</i>`:"")+`</div></div>`}));
   h+=`<div class="empty" style="padding:10px">Pontuação e desempates conforme o Regulamento Técnico (aba Regulamento). Atualizado até o ${esc(BOLETIM)}. Em caso de diferença, vale a classificação oficial da organização.</div>`;
   el.innerHTML=h;
   document.getElementById("ofc").onchange=e=>{save("jis_ofc",e.target.checked);renderStd()};
