@@ -487,10 +487,10 @@ renderReg();renderAll();setTab(tab);
 setInterval(renderList,60000);
 // ===== CONTADOR DE ACESSOS (Abacus: só números, nenhum dado pessoal) =====
 (function(){const NS="https://abacus.jasoncameron.dev/hit/jisudesc2026-app/";
-  try{if(!localStorage.getItem("jis_dev")){fetch(NS+"aparelhos").then(r=>{if(r.ok)localStorage.setItem("jis_dev","1")}).catch(()=>{})}
+  try{if(!localStorage.getItem("jis_dev")){fetch(NS+"aparelhos?_="+Date.now(),{cache:"no-store"}).then(r=>{if(r.ok)localStorage.setItem("jis_dev","1")}).catch(()=>{})}
     const _n=new Date(),today=`${_n.getFullYear()}-${String(_n.getMonth()+1).padStart(2,"0")}-${String(_n.getDate()).padStart(2,"0")}`;
-    if(localStorage.getItem("jis_day_hit")!==today){fetch(NS+"aparelhos-"+today).then(r=>{if(r.ok)localStorage.setItem("jis_day_hit",today)}).catch(()=>{})}
-    fetch(NS+"aberturas").catch(()=>{})}catch(e){}})();
+    if(localStorage.getItem("jis_day_hit")!==today){fetch(NS+"aparelhos-"+today+"?_="+Date.now(),{cache:"no-store"}).then(r=>{if(r.ok)localStorage.setItem("jis_day_hit",today)}).catch(()=>{})}
+    fetch(NS+"aberturas?_="+Date.now(),{cache:"no-store"}).catch(()=>{})}catch(e){}})();
 // ===== INSTALAÇÃO FÁCIL =====
 (function(){const box=document.getElementById("inst");const ua=navigator.userAgent;
   const standalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
