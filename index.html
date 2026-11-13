@@ -84,6 +84,10 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 .ov .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .ov .grid button{padding:12px 4px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-weight:700;font-size:14px}
 .ov .grid button.all{grid-column:1/-1}
+.inst{display:flex;align-items:center;gap:10px;background:#f5b400;color:#1a1a1a;padding:10px 12px;font-size:14px;font-weight:600}
+.inst b{font-weight:800}
+.inst .go{margin-left:auto;background:#1f3f8f;color:#fff;border:0;border-radius:10px;padding:9px 12px;font-weight:800;font-size:14px;text-decoration:none;white-space:nowrap}
+.inst .x{background:none;border:0;font-size:20px;color:#1a1a1a;padding:0 2px}
 </style>
 </head>
 <body>
@@ -92,6 +96,7 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
   <p>Horários, resultados e classificação · <span id="upd"></span></p>
   <div class="ctr"><label for="center">Meu centro</label><select id="center"></select></div>
 </header>
+<div class="inst hide" id="inst"></div>
 <nav class="tabs"><button id="tabJ" class="on">Jogos</button><button id="tabC">Classificação</button><button id="tabR">Regulamento</button></nav>
 
 <div class="bar" id="barJ">
@@ -450,6 +455,24 @@ setInterval(renderList,60000);
     const _n=new Date(),today=`${_n.getFullYear()}-${String(_n.getMonth()+1).padStart(2,"0")}-${String(_n.getDate()).padStart(2,"0")}`;
     if(localStorage.getItem("jis_day_hit")!==today){fetch(NS+"aparelhos-"+today).then(r=>{if(r.ok)localStorage.setItem("jis_day_hit",today)}).catch(()=>{})}
     fetch(NS+"aberturas").catch(()=>{})}catch(e){}})();
+// ===== INSTALAÇÃO FÁCIL =====
+(function(){const box=document.getElementById("inst");const ua=navigator.userAgent;
+  const standalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+  if(standalone)return;
+  if(load("jis_inst_x",0)>Date.now())return;
+  const close='<button class="x" aria-label="Fechar">×</button>';
+  const show=h=>{box.innerHTML=h+close;box.classList.remove("hide");box.querySelector(".x").onclick=()=>{box.classList.add("hide");save("jis_inst_x",Date.now()+6*3600e3)}};
+  const isAndroid=/Android/i.test(ua),isIOS=/iPhone|iPad|iPod/i.test(ua);
+  const inApp=/WhatsApp|Instagram|FBAN|FBAV|FB_IAB|Line\/|; wv\)/i.test(ua);
+  const url=location.href.split("#")[0];
+  if(isAndroid&&inApp){show(`<span>Para instalar, abra no <b>Chrome</b></span><a class="go" href="intent://${url.replace(/^https?:\/\//,"")}#Intent;scheme=https;package=com.android.chrome;end">Abrir no Chrome</a>`);return}
+  if(isIOS&&(inApp||/CriOS|FxiOS|EdgiOS/i.test(ua))){show(`<span>Para instalar no iPhone, abra este link no <b>Safari</b> (toque em ⋯ ou na bússola → Abrir no Safari)</span>`);return}
+  if(isIOS){show(`<span>📲 Instalar: toque em <b>Compartilhar</b> <svg width="16" height="18" viewBox="0 0 16 20" style="vertical-align:-3px" fill="none" stroke="#1f3f8f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V2M4 6l4-4 4 4"/><path d="M5 9H3v9h10V9h-2"/></svg> e depois em <b>Adicionar à Tela de Início</b></span>`);return}
+  let dp=null;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;
+    show(`<span>📲 Instale o app no seu celular</span><button class="go" id="instb">Instalar</button>`);
+    document.getElementById("instb").onclick=async()=>{dp.prompt();try{await dp.userChoice}catch(_){}box.classList.add("hide")}});
+  window.addEventListener("appinstalled",()=>box.classList.add("hide"));
+})();
 fetchLive();setInterval(fetchLive,5*60*1000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)fetchLive()});
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
