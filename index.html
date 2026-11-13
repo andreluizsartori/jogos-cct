@@ -218,26 +218,31 @@ function table(g,tipo){
   return L;
 }
 function renderStd(){
-  const el=document.getElementById("viewC");let h="";
+  const el=document.getElementById("viewC");
+  const of=load("jis_ofc",false);
+  let h=`<div class="tog" style="margin:0 0 12px"><label><input type="checkbox" id="ofc" ${of?"checked":""}> Só favoritos ★</label></div>`;
   const isMine=t=>center!=="ALL"&&centersIn(t).has(center);
   let list=STD;
   if(center!=="ALL"){const mine=STD.filter(m=>m.grupos.some(g=>g.times.some(isMine)));const rest=STD.filter(m=>!mine.includes(m));list=[...mine,...rest]}
+  if(of)list=list.filter(m=>fav.has(m.s));
+  if(of&&!list.length)h+=`<div class="empty">Nenhum esporte coletivo nos favoritos.<br>Toque na ☆ ao lado do nome de uma tabela para favoritá-la.</div>`;
   list.forEach(m=>m.grupos.forEach(g=>{
     const L=table(g,m.tipo),gol=m.tipo==="gols";
     const pp=m.tipo==="sets"?"Sets":gol?"Gols":"Pontos";
-    h+=`<div class="tbl"><h3>${esc(m.s)} · ${esc(g.n)}</h3><div class="sub">${esc(g.cls)}</div><table>
+    h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>${esc(m.s)} · ${esc(g.n)}</span><button class="fstar${fav.has(m.s)?" f":""}" data-s="${esc(m.s)}" aria-label="Favoritar">${fav.has(m.s)?"★":"☆"}</button></h3><div class="sub">${esc(g.cls)}</div><table>
     <tr><th>#</th><th class="t">Equipe</th><th>Pts</th><th>J</th><th>V</th>${gol?"<th>E</th>":""}<th>D</th><th>${pp}</th><th>Saldo</th></tr>`;
     L.forEach((o,i)=>{const a=m.tipo==="sets"?o.SP:o.P,b=m.tipo==="sets"?o.SC:o.C,sd=a-b;
       h+=`<tr class="${isMine(o.t)?"me":""} ${i<g.q&&o.J?"q":""}"><td>${i+1}</td><td class="t">${esc(o.t)}</td><td><b>${o.Pts}</b></td><td>${o.J}</td><td>${o.V}</td>${gol?`<td>${o.E}</td>`:""}<td>${o.D}</td><td>${a}:${b}</td><td>${sd>0?"+":""}${sd}</td></tr>`});
     h+=`</table><div class="gl">`+g.jogos.map(([a,b,r,det])=>`${hl(a)} ${r?`<b>${r[0]} x ${r[1]}</b>`:"x"} ${hl(b)}${det?` <span>(${esc(det)})</span>`:""}`).join("<br>")+(g.pend?`<br><i>${esc(g.pend)}</i>`:"")+`</div></div>`}));
   h+=`<div class="empty" style="padding:10px">Pontuação e desempates conforme o Regulamento Técnico (aba Regulamento). Atualizado até o ${esc(BOLETIM)}. Em caso de diferença, vale a classificação oficial da organização.</div>`;
-  el.innerHTML=h}
+  el.innerHTML=h;
+  document.getElementById("ofc").onchange=e=>{save("jis_ofc",e.target.checked);renderStd()};
+  el.querySelectorAll(".fstar").forEach(b=>b.onclick=()=>toggleFav(b.dataset.s))}
 
 // ===== REGULAMENTO =====
 function renderReg(){
   document.getElementById("viewR").innerHTML=`
   <a class="btn" href="regulamento.pdf" target="_blank" rel="noopener">📄 Abrir regulamento completo (PDF)</a>
-  <a class="btn" href="instalar.html" style="background:#f5b400;color:#1a1a1a">📲 Como instalar o app no celular</a>
   <div class="rg"><h3>Regras gerais</h3><div class="bx"><ul>
    <li>Tolerância de <b>10 min</b> só no primeiro jogo; nos demais, <b>5 min</b>. Depois disso é W.O.</li>
    <li>Quem leva W.O. é eliminado e todos os seus jogos naquela fase são anulados.</li>
