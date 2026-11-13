@@ -52,6 +52,9 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 .bd{flex:1;min-width:0}
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
 .sport{font-weight:700;font-size:14px}
+.bell{text-decoration:none;font-size:18px;line-height:1;padding:0 4px;filter:grayscale(.2)}
+.acts{display:flex;align-items:center;gap:2px}
+.remb{display:block;width:100%;margin-top:8px;border:0;border-radius:12px;padding:10px;font-size:14px;font-weight:700;background:#f5b400;color:#1a1a1a}
 .fstar{border:0;background:none;font-size:20px;line-height:1;color:var(--mut);padding:0 2px}
 .vs{margin:6px 0;font-size:15px;overflow-wrap:anywhere}
 .c{background:var(--hl);color:var(--pri);font-weight:800;padding:1px 6px;border-radius:6px}
@@ -97,6 +100,7 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
     <label><input type="checkbox" id="onlyFav"> Só favoritos ★</label>
     <label><input type="checkbox" id="showCond" checked> Fases finais</label>
   </div>
+  <button class="remb hide" id="remb">🔔 Lembretes dos favoritos na agenda (30 min antes)</button>
 </div>
 
 <div class="wrap" id="viewJ">
@@ -186,11 +190,30 @@ function renderList(){
     const vs=g.b?`${hl(g.a)} <span style="color:var(--mut)">x</span> ${hl(g.b)}`:hl(g.a);
     const d=document.createElement("div");d.className="g"+(past?" past":"")+(next?" next":"")+(g.c?" cond":"");
     d.innerHTML=`<div class="tm"><b>${g.t==="seq"?"seq.":esc(g.t)}</b><small>${g.t==="seq"?"em sequência":SHORT[g.d]}</small></div>
-    <div class="bd"><div class="top"><span class="sport">${esc(g.s)}</span><button class="fstar${fav.has(g.s)?" f":""}" aria-label="Favoritar">${fav.has(g.s)?"★":"☆"}</button></div>
+    <div class="bd"><div class="top"><span class="sport">${esc(g.s)}</span><span class="acts">${mins(g.t)!==null&&!g.r?`<a class="bell" href="${gcal(g)}" target="_blank" rel="noopener" aria-label="Adicionar à agenda">🔔</a>`:""}<button class="fstar${fav.has(g.s)?" f":""}" aria-label="Favoritar">${fav.has(g.s)?"★":"☆"}</button></span></div>
     <div class="vs">${vs}${g.r?`<span class="res">${esc(g.r)}</span>`:""}</div>
     <div class="meta">📍 ${esc(g.l)}<br>${esc(g.f)}${g.n?"<br>"+esc(g.n):""}${who?"<br>"+esc(who):""}</div>
     ${next?'<span class="tag nx">Próximo</span>':""}${g.c?'<span class="tag">Depende da classificação</span>':""}${g.r?'<span class="tag">Encerrado</span>':""}</div>`;
     d.querySelector(".fstar").onclick=()=>toggleFav(g.s);el.appendChild(d)})}
+
+// ===== LEMBRETES (agenda) =====
+function utc(d,t,add){const m=mins(t)+(add||0)+180;const dd=d+Math.floor(m/1440),mm=m%1440;const p=n=>String(n).padStart(2,"0");return `202611${p(dd)}T${p(Math.floor(mm/60))}${p(mm%60)}00Z`}
+function evTitle(g){return `${g.s}: ${g.b?g.a+" x "+g.b:g.a}`}
+function evDesc(g){return `JISUDESC 2026 · ${g.f}${g.n?" · "+g.n:""}${g.c?" · Depende da classificação":""}`}
+function gcal(g){return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(evTitle(g))+"&dates="+utc(g.d,g.t)+"/"+utc(g.d,g.t,40)+"&details="+encodeURIComponent(evDesc(g)+" · Lembrete 30 min antes")+"&location="+encodeURIComponent(g.l+" – AFFESC, Florianópolis")}
+function icsEsc(x){return String(x).replace(/[\\,;]/g,m=>"\\"+m).replace(/\n/g,"\\n")}
+function makeIcs(){
+  const list=G.filter(g=>fav.has(g.s)&&involved(g)&&mins(g.t)!==null&&!g.r).sort((a,b)=>a.d-b.d||a.o-b.o);
+  if(!list.length)return null;
+  const now=utc(13,"00:00");
+  let out=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//JISUDESC 2026//Jogos//PT","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
+  list.forEach((g,i)=>{out.push("BEGIN:VEVENT","UID:jis26-"+g.d+"-"+g.t.replace(":","")+"-"+i+"-"+evTitle(g).replace(/[^A-Za-z0-9]/g,"")+"@jisudesc","DTSTAMP:"+now,"DTSTART:"+utc(g.d,g.t),"DTEND:"+utc(g.d,g.t,40),
+    "SUMMARY:"+icsEsc(evTitle(g)),"LOCATION:"+icsEsc(g.l+" – AFFESC, Florianópolis"),"DESCRIPTION:"+icsEsc(evDesc(g)),
+    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(evTitle(g)),"TRIGGER:-PT30M","END:VALARM","END:VEVENT")});
+  out.push("END:VCALENDAR");return {txt:out.join("\r\n"),n:list.length}}
+document.getElementById("remb").onclick=()=>{const r=makeIcs();if(!r)return;
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([r.txt],{type:"text/calendar"}));a.download="jisudesc-favoritos.ics";document.body.appendChild(a);a.click();a.remove();
+  document.getElementById("remb").textContent=`✅ ${r.n} jogos baixados – abra o arquivo para adicionar à agenda`};
 
 // ===== CLASSIFICAÇÃO (critérios do Regulamento Técnico) =====
 // Vôlei 4x4 e Basquete 3x3: vitória 2, derrota 1. Futebol suíço: vitória 3, empate 1, derrota 0.
@@ -281,7 +304,7 @@ document.getElementById("favsel").onclick=()=>{sel=new Set(fav);persist();render
 onlyFav.onchange=()=>{persist();renderList()};showCond.onchange=()=>{persist();renderList()};
 document.getElementById("upd").textContent=BOLETIM;
 
-function renderAll(){renderDays();renderChips();renderList();renderStd()}
+function renderAll(){document.getElementById("remb").classList.toggle("hide",!fav.size);renderDays();renderChips();renderList();renderStd()}
 if(center===null){document.getElementById("ov").classList.remove("hide");center="ALL"}else csel.value=center;
 renderReg();renderAll();setTab(tab);
 setInterval(renderList,60000);
