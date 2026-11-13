@@ -444,6 +444,12 @@ setUpd();
 if(center===null){document.getElementById("ov").classList.remove("hide");center="ALL"}else csel.value=center;
 renderReg();renderAll();setTab(tab);
 setInterval(renderList,60000);
+// ===== CONTADOR DE ACESSOS (Abacus: só números, nenhum dado pessoal) =====
+(function(){const NS="https://abacus.jasoncameron.dev/hit/jisudesc2026-app/";
+  try{if(!localStorage.getItem("jis_dev")){fetch(NS+"aparelhos").then(r=>{if(r.ok)localStorage.setItem("jis_dev","1")}).catch(()=>{})}
+    const today=new Date().toISOString().slice(0,10);
+    if(localStorage.getItem("jis_day_hit")!==today){fetch(NS+"aparelhos-"+today).then(r=>{if(r.ok)localStorage.setItem("jis_day_hit",today)}).catch(()=>{})}
+    fetch(NS+"aberturas").catch(()=>{})}catch(e){}})();
 fetchLive();setInterval(fetchLive,5*60*1000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)fetchLive()});
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
