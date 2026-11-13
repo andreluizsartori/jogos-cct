@@ -304,12 +304,78 @@ function setTab(t){tab=t;save("jis_tab",t);
   document.getElementById("barJ").classList.toggle("hide",t!=="J");window.scrollTo(0,0)}
 ["J","C","R"].forEach(k=>document.getElementById("tab"+k).onclick=()=>setTab(k));
 onlyFav.onchange=()=>{persist();renderList()};showCond.onchange=()=>{persist();renderList()};
-document.getElementById("upd").textContent=BOLETIM;
 
 function renderAll(){document.getElementById("remb").classList.toggle("hide",!fav.size);renderDays();renderChips();renderList();renderStd()}
+// ===== RESULTADOS AO VIVO (planilha oficial do chaveamento) =====
+const SHEET_ID="1ZKNnBW2bFo7ZUFw4_LpUEcmrlPmJ8FsPdWsER8a18cI";
+const TABS={"Basquete 3x3":"Basquete 3x3 Masculino","fut7":"Futebol Suíço Masculino",
+ "volei 4x MASC":"Vôlei 4x4 Masculino","volei 4x FEM":"Vôlei 4x4 Feminino","volei 4x MISTO":"Vôlei 4x4 Misto",
+ "Beach Tennis Masculino":"Beach Tennis Masculino","Beach Tennis Feminino":"Beach Tennis Feminino","Beach Tennis Misto":"Beach Tennis Misto",
+ "Bocha Masculina":"Bocha Masculino","Bocha Feminina":"Bocha Feminino","Canastra":"Canastra","Domino":"Dominó","FIFA":"FIFA",
+ "Sinuca Masculino":"Sinuca Masculino","Sinuca Feminino":"Sinuca Feminino","Tênis de Campo Masculino":"Tênis de Campo Masculino",
+ "Tênis de Campo Feminino":"Tênis de Campo Feminino","Tênis de mesa Masculino":"Tênis de Mesa Masculino","Tenis de Mesa Feminino":"Tênis de Mesa Feminino",
+ "TOTO Masculino":"Totó Masculino","TOTO Feminino":"Totó Feminino","TRUCO":"Truco"};
+const BASE=G.map(g=>({d:g.d,t:g.t,o:g.o,a:g.a,b:g.b,c:g.c,r:g.r,det:g.det}));
+function csvParse(t){const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const ch=t[i];
+    if(q){if(ch=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=ch}
+    else if(ch=='"')q=true;else if(ch==","){row.push(f);f=""}else if(ch=="\n"){row.push(f);rows.push(row);row=[];f=""}else if(ch!="\r")f+=ch}
+  if(f||row.length){row.push(f);rows.push(row)}return rows}
+function nrm(x){return String(x||"").toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/\s*\/\s*/g,"/").replace(/\s+/g," ").trim().replace(/\bREIT(?![A-Z])/g,"REITORIA").replace(/CE0/g,"CEO")}
+const isN=c=>/^\d+$/.test(c);
+function rowsToGames(rows){const out=[];
+  rows.forEach(row=>{row=row.map(c=>String(c||"").trim());
+    row.forEach((c,ix)=>{if(c.toUpperCase()!=="X")return;
+      let j=ix-1,L=[];while(j>=0&&(row[j]===""||isN(row[j])||/^W\.?O\.?$/i.test(row[j]))){if(row[j]!=="")L.unshift(row[j]);j--}
+      let k=ix+1,R=[];while(k<row.length&&(row[k]===""||isN(row[k])||/^W\.?O\.?$/i.test(row[k]))){if(row[k]!=="")R.push(row[k]);k++}
+      const t1=row[j]||"",t2=row[k]||"";if(!t1||!t2)return;
+      let d=null,t=null;for(let m=0;m<j;m++){if(/^\d{1,2}\/11$/.test(row[m]))d=+row[m].split("/")[0];if(/^\d{1,2}:\d{2}$/.test(row[m]))t=row[m].padStart(5,"0")}
+      let r="",det="";
+      const wo=[...L,...R].some(x=>/W/i.test(x));
+      if(wo){r=L.some(x=>/W/i.test(x))?"W.O. x vitória":"vitória x W.O."}
+      else if(L.length===1&&R.length===1)r=`${L[0]} x ${R[0]}`;
+      else if(L.length>1&&L.length===R.length){let a=0,b=0;const p=[];L.forEach((x,i)=>{p.push(x+"-"+R[i]);+x>+R[i]?a++:b++});r=`${a} x ${b}`;det=p.join(" ")}
+      out.push({t1,t2,r,det,d,t})})});
+  return out}
+const realTeam=x=>centersIn(x).size>0&&!/^(VJ|PJ|[VP]\d|\d|MELHOR|PERDEDOR|VENCEDOR)/i.test(x.trim());
+function applyLive(tabs){
+  G.forEach((g,i)=>Object.assign(g,BASE[i]));
+  let used=0;
+  for(const[tab,csv]of Object.entries(tabs)){const sp=TABS[tab];if(!sp||!csv)continue;
+    const games=rowsToGames(csvParse(csv)),mine=G.filter(g=>g.s===sp);const done=new Set();let hits=0;
+    games.forEach(x=>{const A=nrm(x.t1),B=nrm(x.t2);
+      let g=mine.find(g=>!done.has(g)&&nrm(g.a)===A&&nrm(g.b)===B),rev=false;
+      if(!g){g=mine.find(g=>!done.has(g)&&nrm(g.a)===B&&nrm(g.b)===A);rev=!!g}
+      if(!g)return;hits++;done.add(g);x.done=true;
+      if(x.r){if(rev){const p=x.r.split(" x ");g.r=p[1]+" x "+p[0];g.det=x.det.split(" ").map(s=>s.split("-").reverse().join("-")).join(" ")}else{g.r=x.r;g.det=x.det}}
+      if(x.d&&x.t&&(x.d!==g.d||x.t!==g.t)){g.d=x.d;g.t=x.t;g.o=mins(x.t)}});
+    if(!hits)continue;used++;
+    // jogos de fase seguinte: casa por dia e horário quando a planilha já tem os nomes das equipes
+    games.forEach(x=>{if(x.done||!x.d||!x.t)return;
+      const c=mine.filter(g=>!done.has(g)&&g.d===x.d&&g.t===x.t);if(c.length!==1)return;const g=c[0];
+      if(realTeam(x.t1)&&realTeam(x.t2)){g.a=x.t1;g.b=x.t2;g.c=false;g.cs=new Set([...centersIn(x.t1),...centersIn(x.t2)])}else return;
+      done.add(g);if(x.r){g.r=x.r;g.det=x.det}})}
+  return used}
+let liveInfo=load("jis_live",null);
+function setUpd(){const u=document.getElementById("upd");
+  if(liveInfo&&liveInfo.used){const dt=new Date(liveInfo.ts);u.textContent=`Resultados da planilha oficial · ${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}`}
+  else u.textContent=BOLETIM}
+if(liveInfo&&liveInfo.tabs){liveInfo.used=applyLive(liveInfo.tabs)}
+async function fetchLive(){
+  const names=Object.keys(TABS),tabs={};
+  await Promise.all(names.map(async n=>{try{
+    const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&headers=0&sheet=${encodeURIComponent(n)}&_=${Date.now()}`,{cache:"no-store"});
+    if(r.ok){const t=await r.text();if(!/^\s*<|google\.visualization/.test(t))tabs[n]=t}}catch(e){}}));
+  if(!Object.keys(tabs).length)return;
+  const used=applyLive(tabs);if(!used)return;
+  liveInfo={ts:Date.now(),used,tabs};save("jis_live",liveInfo);setUpd();renderAll()}
+
+setUpd();
 if(center===null){document.getElementById("ov").classList.remove("hide");center="ALL"}else csel.value=center;
 renderReg();renderAll();setTab(tab);
 setInterval(renderList,60000);
+fetchLive();setInterval(fetchLive,5*60*1000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)fetchLive()});
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
 </script>
 </body>
