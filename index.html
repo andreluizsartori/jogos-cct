@@ -55,16 +55,34 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 .tag.you{background:var(--acc);color:#222;border-color:var(--acc)}
 .tag.cd{color:var(--mut)}
 .empty{text-align:center;color:var(--mut);padding:30px 10px}
+.tabs{display:flex;background:var(--pri);padding:0 12px}
+@media (prefers-color-scheme:dark){.tabs{background:#1f3f8f}}
+.tabs button{flex:1;border:0;background:none;color:#fff;opacity:.7;font-size:15px;font-weight:700;padding:10px 0;border-bottom:3px solid transparent}
+.tabs button.on{opacity:1;border-bottom-color:var(--acc)}
+.hide{display:none!important}
+.res{display:inline-block;margin-left:6px;font-weight:800;background:var(--pri);color:#fff;border-radius:6px;padding:1px 7px;font-size:14px}
+.tbl{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.tbl h3{margin:0;padding:10px 12px 2px;font-size:15px}
+.tbl .sub{padding:0 12px 8px;font-size:12px;color:var(--mut)}
+.tbl table{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-size:11px;color:var(--mut);font-weight:600;padding:6px 4px;border-top:1px solid var(--line)}
+.tbl td{padding:8px 4px;border-top:1px solid var(--line);text-align:center}
+.tbl td.t,.tbl th.t{text-align:left;padding-left:12px}
+.tbl tr.cct td{background:var(--cct);font-weight:800;color:var(--pri)}
+.tbl tr.q td:first-child{box-shadow:inset 3px 0 0 #2e9d5b}
+.gl{font-size:12px;color:var(--mut);padding:6px 12px 10px;border-top:1px solid var(--line);line-height:1.7}
+.gl b{color:var(--ink)}
 footer{font-size:11px;color:var(--mut);text-align:center;padding:10px 16px 30px}
 </style>
 </head>
 <body>
 <header>
   <h1>JISUDESC 2026 · CCT</h1>
-  <p>Horários dos jogos do CCT – Boletim 1 · AFFESC</p>
+  <p>Horários e resultados do CCT · <span id="upd"></span></p>
 </header>
+<nav class="tabs"><button id="tabJ" class="on">Jogos</button><button id="tabC">Classificação</button></nav>
 
-<div class="bar">
+<div class="bar" id="barJ">
   <div class="seg" id="days"></div>
   <div class="tog">
     <label><input type="checkbox" id="onlyFav"> Só favoritos ★</label>
@@ -72,7 +90,8 @@ footer{font-size:11px;color:var(--mut);text-align:center;padding:10px 16px 30px}
   </div>
 </div>
 
-<div class="wrap">
+<div class="wrap hide" id="viewC"></div>
+<div class="wrap" id="viewJ">
   <details class="sp" id="spBox">
     <summary id="spSum">Esportes</summary>
     <div class="mini"><button id="all">Mostrar todos</button><button id="none">Selecionar favoritos</button></div>
@@ -189,6 +208,52 @@ const G=[
 {s:"Gincana",d:14,t:"15:30",a:"Boliche reciclável",b:"",l:"Piscina AFFESC",f:"Prova"},
 {s:"Gincana",d:14,t:"16:30",a:"Desmonta e monta",b:"",l:"Piscina AFFESC",f:"Prova"},
 ];
+// ===== RESULTADOS =====
+const BOLETIM="Boletim 1";
+// Placar dos jogos do CCT na aba Jogos: chave "Esporte|dia|hora|timeA|timeB" -> "2 x 0"
+const R={};
+// Grupos dos esportes coletivos. Placar: [pontos A, pontos B] (sets no vôlei, gols no futebol, pontos no basquete) ou null
+const STD=[
+ {s:"Vôlei 4x4 Masculino",tipo:"sets",grupos:[
+  {n:"Grupo A",cls:"1º e 2º vão à semifinal",q:2,times:["CCT","CEPLAN","REITORIA/CEAVI"],jogos:[["CCT","CEPLAN",null],["REITORIA/CEAVI","CEPLAN",null],["REITORIA/CEAVI","CCT",null]]},
+  {n:"Grupo B",cls:"1º e 2º vão à semifinal",q:2,times:["CEO/CERES","CEFID","CAV"],jogos:[["CEO/CERES","CEFID",null],["CAV","CEFID",null],["CAV","CEO/CERES",null]]}]},
+ {s:"Vôlei 4x4 Misto",tipo:"sets",grupos:[
+  {n:"Grupo A",cls:"1º de cada grupo + melhor 2º vão à semifinal",q:1,times:["CCT","REITORIA","CEAD"],jogos:[["CCT","REITORIA",null],["CEAD","REITORIA",null],["CEAD","CCT",null]]},
+  {n:"Grupo B",cls:"1º de cada grupo + melhor 2º vão à semifinal",q:1,times:["CAV","CERES/CESFI","ESAG/FAED"],jogos:[["CAV","CERES/CESFI",null],["ESAG/FAED","CERES/CESFI",null],["ESAG/FAED","CAV",null]]},
+  {n:"Grupo C",cls:"1º de cada grupo + melhor 2º vão à semifinal",q:1,times:["CEO","CEPLAN","CEART"],jogos:[["CEO","CEPLAN",null],["CEART","CEPLAN",null],["CEART","CEO",null]]}]},
+ {s:"Vôlei 4x4 Feminino",tipo:"sets",grupos:[
+  {n:"Grupo único",cls:"Rodízio simples – campeão é o 1º",q:1,times:["CEO","CAV/CERES/REITORIA","CEPLAN","CEFID"],jogos:[["CEO","CAV/CERES/REITORIA",null],["CEPLAN","CEFID",null],["CEO","CEPLAN",null],["CAV/CERES/REITORIA","CEFID",null],["CEO","CEFID",null],["CAV/CERES/REITORIA","CEPLAN",null]]}]},
+ {s:"Futebol Suíço Masculino",tipo:"gols",grupos:[
+  {n:"Grupo único",cls:"Rodízio simples – campeão é o 1º",q:1,times:["CCT/CEPLAN","CEAVI/CERES/CAV/REITORIA/ESAG","CEFID"],jogos:[["CCT/CEPLAN","CEAVI/CERES/CAV/REITORIA/ESAG",null]],pend:"Jogo 2 (sáb 15:00): CEFID x perdedor do jogo 1 · Jogo 3 (dom 09:30): CEFID x vencedor do jogo 1"}]},
+ {s:"Basquete 3x3 Masculino",tipo:"pts",grupos:[
+  {n:"Grupo único",cls:"Rodízio simples – campeão é o 1º",q:1,times:["CEAVI/FAED/CEFID","CERES/CCT","REITORIA"],jogos:[["CEAVI/FAED/CEFID","CERES/CCT",null]],pend:"Jogo 2 (16:00): REITORIA x perdedor do jogo 1 · Jogo 3 (16:30): REITORIA x vencedor do jogo 1"}]},
+ {s:"Futebol Suíço Sênior",tipo:"gols",grupos:[
+  {n:"Jogo único",cls:"Quem vencer é campeão",q:1,times:["CAV","CCT/CEFID/FAED/CEART"],jogos:[["CAV","CCT/CEFID/FAED/CEART",null]]}]},
+];
+function table(g,tipo){
+  const T={};g.times.forEach(t=>T[t]={t,J:0,V:0,E:0,D:0,P:0,C:0,Pts:0});
+  g.jogos.forEach(([a,b,r])=>{if(!r||!T[a]||!T[b])return;const[x,y]=r;const A=T[a],B=T[b];
+    A.J++;B.J++;A.P+=x;A.C+=y;B.P+=y;B.C+=x;
+    if(x>y){A.V++;B.D++}else if(y>x){B.V++;A.D++}else{A.E++;B.E++}});
+  const L=Object.values(T);L.forEach(o=>o.Pts=tipo==="gols"?o.V*3+o.E:o.V);
+  L.sort((a,b)=>b.Pts-a.Pts||(b.P-b.C)-(a.P-a.C)||b.P-a.P||a.t.localeCompare(b.t));
+  return L;
+}
+function renderStd(){
+  const el=document.getElementById("viewC");
+  const lab={sets:["Sets +","Sets −"],gols:["GP","GC"],pts:["Pts +","Pts −"]};
+  let h="";
+  STD.forEach(m=>m.grupos.forEach(g=>{
+    const L=table(g,m.tipo),[pp,pc]=lab[m.tipo],ptsLab=m.tipo==="gols"?"Pts":"V";
+    h+=`<div class="tbl"><h3>${esc(m.s)} · ${esc(g.n)}</h3><div class="sub">${esc(g.cls)}</div><table>
+    <tr><th>#</th><th class="t">Equipe</th><th>J</th>${m.tipo==="gols"?"<th>V</th><th>E</th>":""}<th>${m.tipo==="gols"?"D":"V"}</th>${m.tipo==="gols"?"":"<th>D</th>"}<th>${pp}</th><th>${pc}</th><th>Saldo</th>${m.tipo==="gols"?"<th>Pts</th>":""}</tr>`;
+    L.forEach((o,i)=>{const sd=o.P-o.C;
+      h+=`<tr class="${/CCT/.test(o.t)?"cct":""} ${i<g.q&&o.J?"q":""}"><td>${i+1}</td><td class="t">${esc(o.t)}</td><td>${o.J}</td>${m.tipo==="gols"?`<td>${o.V}</td><td>${o.E}</td><td>${o.D}</td>`:`<td>${o.V}</td><td>${o.D}</td>`}<td>${o.P}</td><td>${o.C}</td><td>${sd>0?"+":""}${sd}</td>${m.tipo==="gols"?`<td><b>${o.Pts}</b></td>`:""}</tr>`});
+    h+=`</table><div class="gl">`+g.jogos.map(([a,b,r])=>`${team(a)} ${r?`<b>${r[0]} x ${r[1]}</b>`:"x"} ${team(b)}`).join("<br>")+(g.pend?`<br><i>${esc(g.pend)}</i>`:"")+`</div></div>`;
+  }));
+  h+=`<div class="empty" style="padding:10px">Ordem: vitórias (pontos no futebol), saldo e pró. Atualizado até o ${BOLETIM}. A classificação oficial dos boletins prevalece.</div>`;
+  el.innerHTML=h;
+}
 const YOU=new Set(["Vôlei 4x4 Masculino","Vôlei 4x4 Misto"]);
 const SPORTS=[...new Set(G.map(g=>g.s))];
 
@@ -250,7 +315,7 @@ function renderList(){
     const vs=g.b?`${team(g.a)} <span style="color:var(--mut)">x</span> ${team(g.b)}`:team(g.a);
     d.innerHTML=`<div class="tm"><b>${g.t==="seq"?"seq.":g.t}</b><small>${g.t==="seq"?"em sequência":({13:"Sexta",14:"Sábado",15:"Domingo"})[g.d]}</small></div>
     <div class="bd"><div class="top"><span class="sport">${esc(g.s)}</span><button class="fstar${fav.has(g.s)?" f":""}" aria-label="Favoritar">${fav.has(g.s)?"★":"☆"}</button></div>
-    <div class="vs">${vs}</div>
+    <div class="vs">${vs}${R[g.s+"|"+g.d+"|"+g.t+"|"+g.a+"|"+g.b]?`<span class="res">${R[g.s+"|"+g.d+"|"+g.t+"|"+g.a+"|"+g.b]}</span>`:""}</div>
     <div class="meta">📍 ${esc(g.l)}<br>${esc(g.f)}${g.n?"<br>"+esc(g.n):""}</div>
     ${next?'<span class="tag" style="background:var(--acc);color:#222;border-color:var(--acc)">Próximo</span>':""}${YOU.has(g.s)?'<span class="tag you">Você joga</span>':""}${g.c?'<span class="tag cd">Se o CCT avançar</span>':""}</div>`;
     d.querySelector(".fstar").onclick=()=>toggleFav(g.s);
@@ -262,6 +327,14 @@ document.getElementById("all").onclick=()=>{sel.clear();persist();renderAll()};
 document.getElementById("none").onclick=()=>{sel=new Set(fav);persist();renderAll()};
 onlyFav.onchange=()=>{persist();renderList()};
 showCond.onchange=()=>{persist();renderList()};
+document.getElementById("upd").textContent=BOLETIM;
+let tab=load("jis_tab","J");
+function setTab(t){tab=t;save("jis_tab",t);
+  ["J","C"].forEach(k=>{document.getElementById("tab"+k).className=k===t?"on":"";document.getElementById("view"+k).classList.toggle("hide",k!==t)});
+  document.getElementById("barJ").classList.toggle("hide",t!=="J");window.scrollTo(0,0)}
+document.getElementById("tabJ").onclick=()=>setTab("J");
+document.getElementById("tabC").onclick=()=>setTab("C");
+renderStd();setTab(tab);
 renderAll();
 setInterval(renderList,60000);
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
