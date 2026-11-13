@@ -131,8 +131,8 @@ const last={};
 RAW.forEach(r=>{const[s,d,t,a,b,l,f,c,n,res,det]=r;const k=s+d;let o=mins(t);
   if(o===null){o=(last[k]||0)+1}last[k]=o;
   G.push({s,d,t,a,b,l,f,c:!!c,n:n||"",r:res||"",det:det||"",o,cs:new Set([...centersIn(a),...centersIn(b)])})});
-IND.forEach(r=>{const[s,d,t,a,l,f,who]=r;
-  G.push({s,d,t,a,b:"",l,f,c:false,n:"",r:"",o:mins(t),ind:who,cs:new Set(who==="ALL"||!who?[]:Object.keys(who)),all:who==="ALL"||!who})});
+IND.forEach(r=>{const[s,d,t,a,l,f,who]=r;const allC=who==="ALL"||!who||s==="Taco Masculino";
+  G.push({s,d,t,a,b:"",l,f,c:false,n:"",r:"",o:mins(t),ind:who,cs:new Set(who==="ALL"||!who?[]:Object.keys(who)),all:allC})});
 // Centros que disputam cada esporte (para mostrar fases finais)
 const SPC={};G.forEach(g=>{if(!g.c){SPC[g.s]=SPC[g.s]||new Set();g.cs.forEach(x=>SPC[g.s].add(x))}});
 const SPORTS=[...new Set(G.map(g=>g.s))];
@@ -163,7 +163,7 @@ function toggleFav(s){fav.has(s)?fav.delete(s):fav.add(s);persist();renderAll()}
 
 function renderDays(){const el=document.getElementById("days");el.innerHTML="";
   [["all","Todos"],["13","Sexta-feira"],["14","Sábado"],["15","Domingo"]].forEach(([k,l])=>{const b=document.createElement("button");b.textContent=l;if(String(day)===k)b.className="on";b.onclick=()=>{day=k;persist();renderAll()};el.appendChild(b)})}
-function mySports(){return SPORTS.filter(s=>G.some(g=>g.s===s&&!g.c&&involved(g)))}
+function mySports(){return SPORTS.filter(s=>G.some(g=>g.s===s&&!g.c&&involved(g))).sort((a,b)=>a.localeCompare(b,"pt"))}
 function renderChips(){const el=document.getElementById("chips");el.innerHTML="";
   mySports().forEach(s=>{const c=document.createElement("div");c.className="chip"+(fav.has(s)?" sel":"");
     const n=document.createElement("button");n.className="n";n.textContent=s;n.onclick=()=>toggleFav(s);
@@ -186,7 +186,7 @@ function renderList(){
     let who="";
     if(g.ind&&g.ind!=="ALL"){if(center==="ALL"){const n=Object.values(g.ind).reduce((a,v)=>a+v.split(";").length,0);who=`${n} inscritos`}
       else if(g.ind[center])who=`${center}: `+g.ind[center].split(";").map(x=>x.trim()).join(", ")}
-    if(g.all)who="Todos os centros";
+    if(g.all&&!who)who="Todos os centros";
     const vs=g.b?(g.r?`${hl(g.a)} <span class="res">${esc(g.r)}</span> ${hl(g.b)}`:`${hl(g.a)} <span style="color:var(--mut)">x</span> ${hl(g.b)}`):hl(g.a)+(g.r?` <span class="res">${esc(g.r)}</span>`:"");
     const d=document.createElement("div");d.className="g"+(past&&!g.r?" past":"")+(next?" next":"")+(g.c?" cond":"");
     d.innerHTML=`<div class="tm"><b>${g.t==="seq"?"seq.":esc(g.t)}</b><small>${g.t==="seq"?"em sequência":SHORT[g.d]}</small></div>
@@ -304,12 +304,12 @@ function resolveBracket(){
         if(m=x.match(/^Vencedor do jogo do (\S+)$/i)){const g=mine.find(g=>/Quartas/.test(g.f)&&nrm(g.a)===nrm(m[1]));return g?winnerOf(g):null}
         return null};
       let changed=false;
-      mine.forEach(g=>{
+      mine.forEach(g=>{if(g.ind)return;
         if(!g.b&&/^(Vencedores|Perdedores) das semifinais$/i.test(g.a)){const sf=mine.filter(x=>x.f==="Semifinal").sort((a,b)=>a.o-b.o);
           if(sf.length>=2){const f=/^V/.test(g.a)?winnerOf:loserOf;const t=sf.map(f);if(t.every(Boolean)){g.ph=g.a;g.a=t[0];g.b=t[1];changed=true}}return}
         ["a","b"].forEach(k=>{if(isReal(g[k])||!g[k])return;const t=res(g[k]);if(t){g.ph=(g.ph?g.ph+" · ":"")+g[k];g[k]=t;changed=true}});
         if(isReal(g.a)&&(isReal(g.b)||!g.b)&&g.c){g.c=false}
-        g.cs=new Set([...centersIn(g.a),...centersIn(g.b)])});
+        if(!g.ind)g.cs=new Set([...centersIn(g.a),...centersIn(g.b)])});
       if(!changed)break}}}
 
 function renderStd(){

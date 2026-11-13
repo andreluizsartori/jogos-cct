@@ -326,7 +326,7 @@ const IND = [
 ["Natação",14,"14:00","Provas de natação (até 15:00)","AFFESC","Feminino",{
  CEFID:"Adriana Guede Luiz; Caroline Ruschel; Mariana Klauck Beirith; Michelli Vitoria Silvestre", CEPLAN:"Katiane Ruckl",
  CERES:"Bruna Lima Selau", ESAG:"Milena Barbi Ferreira", REITORIA:"Elaine Cristina Casagrande Zanette", CEART:"Alicia Cupani"}],
-["Taco Masculino",14,"13:30","Chamada das duplas e sorteio","Gramado","Jogos até 18:00",{
+["Taco Masculino",14,"13:30","Taco masculino – chamada das duplas e sorteio","Gramado","Todos os centros · jogos até 18:00",{
  CAV:"Marcos Aurelio Coelho de Oliveira; Matheus Rodrigo Machado", CEFID:"Jose Carlos Barcelos Pinto; Rafael João Rosa",
  CERES:"Eric Zettermann Dias de Azevedo; Saulo Pacheco Junior", ESAG:"Alexandre Schwinden Garcia; Rodrigo Diego Piva",
  FAED:"Eduardo Antonio Angeloni; Guilherme de Medeiros", CEAVI:"Diego Rafael Stupp; Edson Meira Fernandes Junior",
