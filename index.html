@@ -106,7 +106,7 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 <div class="wrap" id="viewJ">
   <details class="sp" id="spBox">
     <summary id="spSum">Esportes</summary>
-    <div class="mini"><button id="all">Mostrar todos</button><button id="favsel">Selecionar favoritos</button></div>
+    <div class="mini" style="font-size:12px;color:var(--mut)">Toque num esporte para marcar ou desmarcar como favorito.</div>
     <div class="chips" id="chips"></div>
   </details>
   <div id="list"></div>
@@ -165,15 +165,15 @@ function renderDays(){const el=document.getElementById("days");el.innerHTML="";
   [["all","Todos"],["13","Sexta-feira"],["14","Sábado"],["15","Domingo"]].forEach(([k,l])=>{const b=document.createElement("button");b.textContent=l;if(String(day)===k)b.className="on";b.onclick=()=>{day=k;persist();renderAll()};el.appendChild(b)})}
 function mySports(){return SPORTS.filter(s=>G.some(g=>g.s===s&&!g.c&&involved(g)))}
 function renderChips(){const el=document.getElementById("chips");el.innerHTML="";
-  mySports().forEach(s=>{const c=document.createElement("div");c.className="chip"+(sel.has(s)?" sel":"");
-    const n=document.createElement("button");n.className="n";n.textContent=s;n.onclick=()=>{sel.has(s)?sel.delete(s):sel.add(s);persist();renderAll()};
+  mySports().forEach(s=>{const c=document.createElement("div");c.className="chip"+(fav.has(s)?" sel":"");
+    const n=document.createElement("button");n.className="n";n.textContent=s;n.onclick=()=>toggleFav(s);
     const st=document.createElement("button");st.className="st"+(fav.has(s)?" f":"");st.textContent=fav.has(s)?"★":"☆";st.onclick=()=>toggleFav(s);
     c.append(n,st);el.appendChild(c)});
-  document.getElementById("spSum").textContent="Esportes "+(sel.size?`(${sel.size} selecionado${sel.size>1?"s":""})`:"(todos)")+" · ★ "+fav.size}
+  document.getElementById("spSum").textContent="★ Escolher favoritos ("+fav.size+")"}
 
 function renderList(){
   const now=new Date(),nowDay=(now.getFullYear()===2026&&now.getMonth()===10)?now.getDate():null,nowMin=now.getHours()*60+now.getMinutes();
-  let list=G.filter(g=>involved(g)&&(day==="all"||String(g.d)===String(day))&&(!sel.size||sel.has(g.s))&&(!onlyFav.checked||fav.has(g.s))&&(showCond.checked||!g.c));
+  let list=G.filter(g=>involved(g)&&(day==="all"||String(g.d)===String(day))&&(!onlyFav.checked||fav.has(g.s))&&(showCond.checked||!g.c));
   list.sort((a,b)=>a.d-b.d||a.o-b.o);
   const el=document.getElementById("list");el.innerHTML="";
   if(!list.length){el.innerHTML=`<div class="empty">Nenhum jogo com esses filtros.${onlyFav.checked&&!fav.size?"<br>Toque na ☆ de um esporte para favoritá-lo.":""}</div>`;return}
@@ -299,8 +299,6 @@ function setTab(t){tab=t;save("jis_tab",t);
   ["J","C","R"].forEach(k=>{document.getElementById("tab"+k).className=k===t?"on":"";document.getElementById("view"+k).classList.toggle("hide",k!==t)});
   document.getElementById("barJ").classList.toggle("hide",t!=="J");window.scrollTo(0,0)}
 ["J","C","R"].forEach(k=>document.getElementById("tab"+k).onclick=()=>setTab(k));
-document.getElementById("all").onclick=()=>{sel.clear();persist();renderAll()};
-document.getElementById("favsel").onclick=()=>{sel=new Set(fav);persist();renderAll()};
 onlyFav.onchange=()=>{persist();renderList()};showCond.onchange=()=>{persist();renderList()};
 document.getElementById("upd").textContent=BOLETIM;
 
