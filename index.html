@@ -192,7 +192,7 @@ function renderList(){
     d.innerHTML=`<div class="tm"><b>${g.t==="seq"?"seq.":esc(g.t)}</b><small>${g.t==="seq"?"em sequência":SHORT[g.d]}</small></div>
     <div class="bd"><div class="top"><span class="sport">${esc(g.s)}</span><span class="acts">${mins(g.t)!==null&&!g.r?`<a class="bell" href="${gcal(g)}" target="_blank" rel="noopener" aria-label="Adicionar à agenda">🔔</a>`:""}<button class="fstar${fav.has(g.s)?" f":""}" aria-label="Favoritar">${fav.has(g.s)?"★":"☆"}</button></span></div>
     <div class="vs">${vs}</div>${g.det?`<div class="meta">Sets: ${esc(g.det)}</div>`:""}
-    <div class="meta">📍 ${esc(g.l)}<br>${esc(g.f)}${g.n?"<br>"+esc(g.n):""}${who?"<br>"+esc(who):""}</div>
+    <div class="meta">📍 ${esc(g.l)}<br>${esc(g.f)}${g.ph?" · "+esc(g.ph.replace(/ do grupo /g," "))+" ✔":""}${g.n?"<br>"+esc(g.n):""}${who?"<br>"+esc(who):""}</div>
     ${next?'<span class="tag nx">Próximo</span>':""}${g.c?'<span class="tag">Depende da classificação</span>':""}${g.r?'<span class="tag">Encerrado</span>':""}</div>`;
     d.querySelector(".fstar").onclick=()=>toggleFav(g.s);el.appendChild(d)})}
 
@@ -244,24 +244,94 @@ function table(g,tipo,sp){
     if(same.length===2&&L[i+1].Pts===L[i].Pts){const r=h2h(L[i],L[i+1]);if(r>0){[L[i],L[i+1]]=[L[i+1],L[i]]}else if(r===0&&tipo==="gols"){}i++}}
   return L;
 }
+// ===== CHAVEAMENTO AUTOMÁTICO (classificados conforme regulamento e resultados) =====
+function isReal(x){x=String(x||"").trim();return centersIn(x).size>0&&!/^(VJ|PJ|[VP]\d|\d|MELHOR|PERDEDOR|VENCEDOR)/i.test(x)}
+function RU(s){if(/^Vôlei/.test(s))return{w:2,d:0,l:1,dr:false,tb:"sets",lab:"Sets"};
+  if(/^Beach|^Tênis de Campo/.test(s))return{w:2,d:0,l:0,dr:false,tb:"saldo",lab:/^Beach/.test(s)?"Games":"Pontos"};
+  if(/^FIFA|^Futebol/.test(s))return{w:3,d:1,l:0,dr:true,tb:"saldo",lab:"Gols"};
+  return{w:2,d:0,l:1,dr:false,tb:"saldo",lab:/^Totó/.test(s)?"Gols":"Pontos"}}
+function score(g){if(!g.r)return null;const m=parseR(g.r);if(m)return m;if(/^W\.O\. x/i.test(g.r))return[0,1];if(/x W\.O\.$/i.test(g.r))return[1,0];return null}
+function winnerOf(g){if(!isReal(g.a)||!isReal(g.b))return null;const m=score(g);if(!m||m[0]===m[1])return null;return m[0]>m[1]?g.a:g.b}
+function loserOf(g){const w=winnerOf(g);return w?(w===g.a?g.b:g.a):null}
+const GRX=/grupo (único|[A-D])\b/i;
+function groupsOf(sp){const by={};
+  G.filter(g=>g.s===sp&&GRX.test(g.f)).forEach(g=>{const k=g.f.match(GRX)[1];const n=k.toLowerCase()==="único"?"Grupo único":"Grupo "+k.toUpperCase();
+    (by[n]=by[n]||{n,games:[],teams:[]}).games.push(g);[g.a,g.b].forEach(t=>{if(isReal(t)&&!by[n].teams.includes(t))by[n].teams.push(t)})});
+  return Object.values(by).sort((a,b)=>a.n.localeCompare(b.n))}
+function stats(teams,games,R){const T={};teams.forEach(t=>T[t]={t,J:0,V:0,E:0,D:0,P:0,C:0,SP:0,SC:0,Pts:0});
+  games.forEach(g=>{const m=score(g);if(!m||!T[g.a]||!T[g.b])return;const A=T[g.a],B=T[g.b],[x,y]=m;A.J++;B.J++;
+    if(R.tb==="sets"){A.SP+=x;A.SC+=y;B.SP+=y;B.SC+=x;const[p,c]=setPts(g.det);A.P+=p;A.C+=c;B.P+=c;B.C+=p}else{A.P+=x;A.C+=y;B.P+=y;B.C+=x}
+    if(x>y){A.V++;B.D++}else if(y>x){B.V++;A.D++}else{A.E++;B.E++}});
+  const L=Object.values(T);L.forEach(o=>o.Pts=o.V*R.w+o.E*R.d+o.D*R.l);return L}
+function crit(R){return(a,b)=>R.tb==="sets"?(avg(b.SP,b.SC)-avg(a.SP,a.SC)||avg(b.P,b.C)-avg(a.P,a.C)):((b.P-b.C)-(a.P-a.C)||b.P-a.P||a.C-b.C)}
+function order(L,games,R){const c=crit(R);L.sort((a,b)=>b.Pts-a.Pts||c(a,b)||a.t.localeCompare(b.t));
+  for(let i=0;i<L.length-1;i++){const same=L.filter(o=>o.Pts===L[i].Pts);if(same.length===2&&L[i+1].Pts===L[i].Pts){
+    const g=games.find(g=>(g.a===L[i].t&&g.b===L[i+1].t)||(g.a===L[i+1].t&&g.b===L[i].t));const w=g&&winnerOf(g);if(w===L[i+1].t)[L[i],L[i+1]]=[L[i+1],L[i]];i++}}
+  return L}
+// posição garantida: em qualquer resultado dos jogos que faltam, a equipe termina nessa posição
+function clinched(gr,R){const real=gr.games.every(g=>isReal(g.a)&&isReal(g.b));const out={};
+  const rem=gr.games.filter(g=>!score(g));
+  if(!real)return{out,done:false};
+  if(!rem.length){order(stats(gr.teams,gr.games,R),gr.games,R).forEach((o,i)=>out[i+1]=o.t);return{out,done:true}}
+  if(rem.length>8)return{out,done:false};
+  const base={};stats(gr.teams,gr.games,R).forEach(o=>base[o.t]=o.Pts);
+  const opts=R.dr?[[R.w,R.l],[R.d,R.d],[R.l,R.w]]:[[R.w,R.l],[R.l,R.w]];
+  const pos={};gr.teams.forEach(t=>pos[t]=new Set());
+  const rec=(i,P)=>{if(i===rem.length){gr.teams.forEach(t=>{const hi=gr.teams.filter(u=>P[u]>P[t]).length,eq=gr.teams.filter(u=>u!==t&&P[u]===P[t]).length;pos[t].add(eq?"x":hi+1)});return}
+    opts.forEach(([pa,pb])=>{const Q={...P};Q[rem[i].a]+=pa;Q[rem[i].b]+=pb;rec(i+1,Q)})};
+  rec(0,base);
+  gr.teams.forEach(t=>{if(pos[t].size===1){const p=[...pos[t]][0];if(p!=="x")out[p]=t}});
+  return{out,done:false}}
+function bestOf(sp,grs,R){// 1ºs e 2ºs de grupos diferentes (Art. 7: igualar grupos tirando jogos contra os últimos)
+  const cl=grs.map(gr=>({gr,c:clinched(gr,R)}));if(!cl.length||!cl.every(x=>x.c.done))return null;
+  const min=Math.min(...grs.map(g=>g.teams.length));
+  const rank=pos=>{const L=cl.map(({gr,c})=>{const drop=Object.keys(c.out).filter(p=>+p>min).map(p=>c.out[p]);
+      const games=gr.games.filter(g=>!drop.includes(g.a)&&!drop.includes(g.b));return stats(gr.teams,games,R).find(o=>o.t===c.out[pos])}).filter(Boolean);
+    const cr=crit(R);return L.sort((a,b)=>b.Pts-a.Pts||cr(a,b)).map(o=>o.t)};
+  return{firsts:rank(1),seconds:rank(2)}}
+function resolveBracket(){
+  for(const sp of SPORTS){const R=RU(sp);const mine=G.filter(g=>g.s===sp);
+    for(let pass=0;pass<3;pass++){
+      const grs=groupsOf(sp),cl={};grs.forEach(gr=>cl[gr.n.replace("Grupo ","")]=clinched(gr,R).out);
+      let best=null;const getBest=()=>best===null?(best=bestOf(sp,grs,R)||false):best;
+      const res=x=>{x=String(x||"").trim();let m;
+        if(m=x.match(/^(\d)º (?:do grupo )?([A-D])$/i))return(cl[m[2].toUpperCase()]||{})[+m[1]]||null;
+        if(/^1º melhor$/i.test(x))return getBest()&&getBest().firsts[0]||null;
+        if(m=x.match(/^(\d)º melhor 1º$/i))return getBest()&&getBest().firsts[+m[1]-1]||null;
+        if(/^melhor 2º$/i.test(x))return getBest()&&getBest().seconds[0]||null;
+        if(m=x.match(/^(Vencedor|Perdedor) \((.+) x (.+)\)$/i)){const A=nrm(m[2]),B=nrm(m[3]);const g=mine.find(g=>(nrm(g.a)===A&&nrm(g.b)===B)||(nrm(g.a)===B&&nrm(g.b)===A));return g?(/^V/i.test(m[1])?winnerOf(g):loserOf(g)):null}
+        if(m=x.match(/^(Vencedor|Perdedor) do jogo 1/i)){const g=mine.find(g=>/^Jogo 1/.test(g.f));return g?(/^V/i.test(m[1])?winnerOf(g):loserOf(g)):null}
+        if(m=x.match(/^Vencedor do jogo do (\S+)$/i)){const g=mine.find(g=>/Quartas/.test(g.f)&&nrm(g.a)===nrm(m[1]));return g?winnerOf(g):null}
+        return null};
+      let changed=false;
+      mine.forEach(g=>{
+        if(!g.b&&/^(Vencedores|Perdedores) das semifinais$/i.test(g.a)){const sf=mine.filter(x=>x.f==="Semifinal").sort((a,b)=>a.o-b.o);
+          if(sf.length>=2){const f=/^V/.test(g.a)?winnerOf:loserOf;const t=sf.map(f);if(t.every(Boolean)){g.ph=g.a;g.a=t[0];g.b=t[1];changed=true}}return}
+        ["a","b"].forEach(k=>{if(isReal(g[k])||!g[k])return;const t=res(g[k]);if(t){g.ph=(g.ph?g.ph+" · ":"")+g[k];g[k]=t;changed=true}});
+        if(isReal(g.a)&&(isReal(g.b)||!g.b)&&g.c){g.c=false}
+        g.cs=new Set([...centersIn(g.a),...centersIn(g.b)])});
+      if(!changed)break}}}
+
 function renderStd(){
   const el=document.getElementById("viewC");
   const of=load("jis_ofc",false);
   let h=`<div class="tog" style="margin:0 0 12px"><label><input type="checkbox" id="ofc" ${of?"checked":""}> Só favoritos ★</label></div>`;
   const isMine=t=>center!=="ALL"&&centersIn(t).has(center);
-  let list=STD;
-  if(center!=="ALL"){const mine=STD.filter(m=>m.grupos.some(g=>g.times.some(isMine)));const rest=STD.filter(m=>!mine.includes(m));list=[...mine,...rest]}
+  let list=SPORTS.map(sp=>({s:sp,R:RU(sp),grs:groupsOf(sp)})).filter(m=>m.grs.length&&m.grs.some(g=>g.teams.length>1));
+  if(center!=="ALL"){const mine=list.filter(m=>m.grs.some(g=>g.teams.some(isMine)));list=[...mine,...list.filter(m=>!mine.includes(m))]}
   if(of)list=list.filter(m=>fav.has(m.s));
-  if(of&&!list.length)h+=`<div class="empty">Nenhum esporte coletivo nos favoritos.<br>Toque na ☆ ao lado do nome de uma tabela para favoritá-la.</div>`;
-  list.forEach(m=>m.grupos.forEach(g=>{
-    const L=table(g,m.tipo,m.s),gol=m.tipo==="gols";
-    const pp=m.tipo==="sets"?"Sets":gol?"Gols":"Pontos";
-    h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>${esc(m.s)} · ${esc(g.n)}</span><button class="fstar${fav.has(m.s)?" f":""}" data-s="${esc(m.s)}" aria-label="Favoritar">${fav.has(m.s)?"★":"☆"}</button></h3><div class="sub">${esc(g.cls)}</div><table>
-    <tr><th>#</th><th class="t">Equipe</th><th>Pts</th><th>J</th><th>V</th>${gol?"<th>E</th>":""}<th>D</th><th>${pp}</th><th>Saldo</th></tr>`;
-    L.forEach((o,i)=>{const a=m.tipo==="sets"?o.SP:o.P,b=m.tipo==="sets"?o.SC:o.C,sd=a-b;
-      h+=`<tr class="${isMine(o.t)?"me":""} ${i<g.q&&o.J?"q":""}"><td>${i+1}</td><td class="t">${esc(o.t)}</td><td><b>${o.Pts}</b></td><td>${o.J}</td><td>${o.V}</td>${gol?`<td>${o.E}</td>`:""}<td>${o.D}</td><td>${a}:${b}</td><td>${sd>0?"+":""}${sd}</td></tr>`});
-    h+=`</table><div class="gl">`+g.jogos.map(([a,b,r,det])=>{if(!r){[r,det]=fromGames(m.s,a,b)}return `${hl(a)} ${r?`<b>${r[0]} x ${r[1]}</b>`:"x"} ${hl(b)}${det?` <span>(${esc(det)})</span>`:""}`}).join("<br>")+(g.pend?`<br><i>${esc(g.pend)}</i>`:"")+`</div></div>`}));
-  h+=`<div class="empty" style="padding:10px">Pontuação e desempates conforme o Regulamento Técnico (aba Regulamento). Atualizado até o ${esc(BOLETIM)}. Em caso de diferença, vale a classificação oficial da organização.</div>`;
+  if(of&&!list.length)h+=`<div class="empty">Nenhum esporte com grupos nos favoritos.<br>Toque na ☆ ao lado do nome de uma tabela para favoritá-la.</div>`;
+  list.forEach(m=>{const R=m.R,gol=R.dr,multi=m.grs.length>1;
+    const hasBest=G.some(g=>g.s===m.s&&/melhor/i.test((g.ph||"")+g.a+g.b));const hasSecond=G.some(g=>g.s===m.s&&/2º (do grupo )?[A-D]/i.test((g.ph||"")+g.a+g.b));
+    const cls=hasBest?"1º de cada grupo e o melhor 2º avançam":hasSecond?"1º e 2º de cada grupo avançam":multi?"1º de cada grupo avança":"Classificação final do grupo";
+    const q=hasSecond?2:1;
+    m.grs.forEach(gr=>{const L=order(stats(gr.teams,gr.games,R),gr.games,R);const cl=clinched(gr,R);
+    h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>${esc(m.s)} · ${esc(gr.n)}</span><button class="fstar${fav.has(m.s)?" f":""}" data-s="${esc(m.s)}" aria-label="Favoritar">${fav.has(m.s)?"★":"☆"}</button></h3><div class="sub">${esc(cls)}${cl.done?" · grupo encerrado":""}</div><table>
+    <tr><th>#</th><th class="t">Equipe</th><th>Pts</th><th>J</th><th>V</th>${gol?"<th>E</th>":""}<th>D</th><th>${R.lab}</th><th>Saldo</th></tr>`;
+    L.forEach((o,i)=>{const a=R.tb==="sets"?o.SP:o.P,b=R.tb==="sets"?o.SC:o.C,sd=a-b;const lock=Object.entries(cl.out).find(([p,t])=>t===o.t);
+      h+=`<tr class="${isMine(o.t)?"me":""} ${lock&&+lock[0]<=q?"q":""}"><td>${lock?lock[0]+"º🔒":i+1}</td><td class="t">${esc(o.t)}</td><td><b>${o.Pts}</b></td><td>${o.J}</td><td>${o.V}</td>${gol?`<td>${o.E}</td>`:""}<td>${o.D}</td><td>${a}:${b}</td><td>${sd>0?"+":""}${sd}</td></tr>`});
+    h+=`</table><div class="gl">`+gr.games.map(g=>`${hl(g.a)} ${g.r?`<b>${esc(g.r)}</b>`:"x"} ${hl(g.b)}${g.det?` <span>(${esc(g.det)})</span>`:""}`).join("<br>")+`</div></div>`})});
+  h+=`<div class="empty" style="padding:10px">🔒 = posição garantida, mesmo com jogos por fazer. Pontuação e desempates conforme o Regulamento Técnico. Em caso de diferença, vale a classificação oficial da organização.</div>`;
   el.innerHTML=h;
   document.getElementById("ofc").onchange=e=>{save("jis_ofc",e.target.checked);renderStd()};
   el.querySelectorAll(".fstar").forEach(b=>b.onclick=()=>toggleFav(b.dataset.s))}
@@ -305,7 +375,7 @@ function setTab(t){tab=t;save("jis_tab",t);
 ["J","C","R"].forEach(k=>document.getElementById("tab"+k).onclick=()=>setTab(k));
 onlyFav.onchange=()=>{persist();renderList()};showCond.onchange=()=>{persist();renderList()};
 
-function renderAll(){document.getElementById("remb").classList.toggle("hide",!fav.size);renderDays();renderChips();renderList();renderStd()}
+function renderAll(){resolveBracket();document.getElementById("remb").classList.toggle("hide",!fav.size);renderDays();renderChips();renderList();renderStd()}
 // ===== RESULTADOS AO VIVO (planilha oficial do chaveamento) =====
 const SHEET_ID="1ZKNnBW2bFo7ZUFw4_LpUEcmrlPmJ8FsPdWsER8a18cI";
 const TABS={"Basquete 3x3":"Basquete 3x3 Masculino","fut7":"Futebol Suíço Masculino",
@@ -315,7 +385,7 @@ const TABS={"Basquete 3x3":"Basquete 3x3 Masculino","fut7":"Futebol Suíço Masc
  "Sinuca Masculino":"Sinuca Masculino","Sinuca Feminino":"Sinuca Feminino","Tênis de Campo Masculino":"Tênis de Campo Masculino",
  "Tênis de Campo Feminino":"Tênis de Campo Feminino","Tênis de mesa Masculino":"Tênis de Mesa Masculino","Tenis de Mesa Feminino":"Tênis de Mesa Feminino",
  "TOTO Masculino":"Totó Masculino","TOTO Feminino":"Totó Feminino","TRUCO":"Truco"};
-const BASE=G.map(g=>({d:g.d,t:g.t,o:g.o,a:g.a,b:g.b,c:g.c,r:g.r,det:g.det}));
+const BASE=G.map(g=>({d:g.d,t:g.t,o:g.o,a:g.a,b:g.b,c:g.c,r:g.r,det:g.det,ph:""}));
 function csvParse(t){const rows=[];let row=[],f="",q=false;
   for(let i=0;i<t.length;i++){const ch=t[i];
     if(q){if(ch=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=ch}
