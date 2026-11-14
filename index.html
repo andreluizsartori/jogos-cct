@@ -82,6 +82,7 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 .tbl tr.q td:first-child{box-shadow:inset 3px 0 0 #2e9d5b}
 .gl{font-size:12px;color:var(--mut);padding:6px 12px 10px;border-top:1px solid var(--line);line-height:1.7}
 .gl b{color:var(--ink)}
+.cx summary{padding:10px 12px;font-size:13px;font-weight:700;color:var(--pri);cursor:pointer;border-top:1px solid var(--line)}
 .rg .bx{padding:4px 12px 12px;font-size:13px;line-height:1.55}
 .rg ul{margin:4px 0;padding-left:18px}
 .btn{display:block;text-align:center;background:#1f3f8f;color:#fff;text-decoration:none;font-weight:700;padding:12px;border-radius:12px;margin-bottom:12px}
@@ -354,6 +355,12 @@ function renderStd(){
   if(center!=="ALL"){const mine=list.filter(m=>m.grs.some(g=>g.teams.some(isMine)));list=[...mine,...list.filter(m=>!mine.includes(m))]}
   if(of)list=list.filter(m=>fav.has(m.s));
   if(of&&!list.length)h+=`<div class="empty">Nenhum esporte com grupos nos favoritos.<br>Toque na ☆ ao lado do nome de uma tabela para favoritá-la.</div>`;
+  if(typeof CORRIDA!=="undefined"&&(!of||fav.has("Corrida Rústica"))){
+    Object.entries(CORRIDA).forEach(([nm,cd])=>{
+      h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>Corrida Rústica · ${esc(nm)}</span><button class="fstar${fav.has("Corrida Rústica")?" f":""}" data-s="Corrida Rústica" aria-label="Favoritar">${fav.has("Corrida Rústica")?"★":"☆"}</button></h3><div class="sub">Pontuação dos centros (geral: 20, 15, 12 · categoria: 13, 11, 8, 6, 5, 4, 3, 2 · do 9º em diante: 1)</div><table>
+      <tr><th>#</th><th class="t">Centro</th><th>Pontos</th></tr>`+cd.centros.map(([c,p],i)=>`<tr class="${isMine(c)?"me":""} ${i<3?"q":""}"><td>${i+1}</td><td class="t">${esc(c)}</td><td><b>${p}</b></td></tr>`).join("")+`</table>
+      <details class="cx"><summary>Ver todos os atletas (${cd.atletas.length})</summary><table><tr><th>Geral</th><th class="t">Atleta</th><th>Categoria</th><th>Tempo</th></tr>`+
+      cd.atletas.map(([c,n,cat,t,g,cp])=>`<tr class="${isMine(c)?"me":""}"><td>${g}º</td><td class="t">${esc(n)}<br><small style="color:var(--mut)">${esc(c)}</small></td><td>${esc(cat)}${cp?`<br><small>${cp}º</small>`:""}</td><td>${esc(t)}</td></tr>`).join("")+`</table></details></div>`})}
   list.forEach(m=>{const R=m.R,gol=R.dr,multi=m.grs.length>1;
     const hasBest=G.some(g=>g.s===m.s&&/melhor/i.test((g.ph||"")+g.a+g.b));const hasSecond=G.some(g=>g.s===m.s&&/2º (do grupo )?[A-D]/i.test((g.ph||"")+g.a+g.b));
     const cls=hasBest?"1º de cada grupo e o melhor 2º avançam":hasSecond?"1º e 2º de cada grupo avançam":multi?"Fase de grupos":"Classificação do grupo";
