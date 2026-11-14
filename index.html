@@ -48,6 +48,10 @@ details.sp summary{padding:12px 14px;font-weight:600;font-size:15px;cursor:point
 h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 .g{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;display:flex;gap:12px}
 .g.past{opacity:.55}
+.g.meal{background:#e9f7ee;border-color:#9fd9b3;border-left:5px solid #2e9d5b;padding:9px 12px}
+.g.meal .sport{color:#1e6b3c;font-size:15px}
+.g.meal .tm b{color:#1e6b3c;font-size:17px}
+@media (prefers-color-scheme:dark){.g.meal{background:#15301f;border-color:#2b5c3c}.g.meal .sport,.g.meal .tm b{color:#8fe0ad}}
 .g.next{border:2px solid var(--acc)}
 .g.cond{border-style:dashed}
 .tm{min-width:58px;text-align:center}
@@ -145,7 +149,8 @@ IND.forEach(r=>{const[s,d,t,a,l,f,who]=r;const allC=who==="ALL"||!who||s==="Taco
   G.push({s,d,t,a,b:"",l,f,c:false,n:"",r:"",o:mins(t),ind:who,cs:new Set(who==="ALL"||!who?[]:Object.keys(who)),all:allC})});
 // Centros que disputam cada esporte (para mostrar fases finais)
 const SPC={};G.forEach(g=>{if(!g.c){SPC[g.s]=SPC[g.s]||new Set();g.cs.forEach(x=>SPC[g.s].add(x))}});
-const SPORTS=[...new Set(G.map(g=>g.s))];
+MEALS.forEach(([d,t,end,a])=>G.push({s:"Refeição",d,t,end,a,b:"",l:"Salão de Festas · próximo à piscina externa",f:"Até "+end+" · crachá obrigatório",c:false,n:"",r:"",det:"",o:mins(t),cs:new Set(),all:true,meal:true}));
+const SPORTS=[...new Set(G.filter(g=>!g.meal).map(g=>g.s))];
 
 function load(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -183,7 +188,7 @@ function renderChips(){const el=document.getElementById("chips");el.innerHTML=""
 
 function renderList(){
   const now=new Date(),nowDay=(now.getFullYear()===2026&&now.getMonth()===10)?now.getDate():null,nowMin=now.getHours()*60+now.getMinutes();
-  let list=G.filter(g=>involved(g)&&(day==="all"||String(g.d)===String(day))&&(!onlyFav.checked||fav.has(g.s))&&(showCond.checked||!g.c));
+  let list=G.filter(g=>involved(g)&&(day==="all"||String(g.d)===String(day))&&(!onlyFav.checked||fav.has(g.s)||g.meal)&&(showCond.checked||!g.c));
   list.sort((a,b)=>a.d-b.d||a.o-b.o);
   const el=document.getElementById("list");el.innerHTML="";
   if(!list.length){el.innerHTML=`<div class="empty">Nenhum jogo com esses filtros.${onlyFav.checked&&!fav.size?"<br>Toque na ☆ de um esporte para favoritá-lo.":""}</div>`;return}
@@ -191,6 +196,10 @@ function renderList(){
   let marked=false,cur=null;
   list.forEach(g=>{
     if(g.d!==cur){cur=g.d;const h=document.createElement("h2");h.className="day";h.textContent=DAYS[g.d];el.appendChild(h)}
+    if(g.meal){const m=document.createElement("div");const nowM=nowDay===g.d&&mins(g.t)<=nowMin&&nowMin<mins(g.end),gone=nowDay!==null&&(g.d<nowDay||(g.d===nowDay&&nowMin>=mins(g.end)));
+      m.className="g meal"+(gone?" past":"")+(nowM?" now":"");
+      m.innerHTML=`<div class="tm"><b>${esc(g.t)}</b><small>até ${esc(g.end)}</small></div><div class="bd"><div class="sport">${esc(g.a)}</div><div class="meta">📍 ${esc(g.l)}<br>Crachá obrigatório · não há refeição fora do horário</div>${nowM?'<span class="tag nx" style="background:#2e9d5b;border-color:#2e9d5b;color:#fff">Servindo agora</span>':""}</div>`;
+      el.appendChild(m);return}
     const past=g.r?true:isPast(g);let next=false;
     if(!past&&!marked&&nowDay!==null&&g.d>=nowDay&&mins(g.t)!==null){next=true;marked=true}
     let who="";

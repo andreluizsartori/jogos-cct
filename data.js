@@ -373,3 +373,10 @@ const STD = [
 // Pódio informado manualmente (provas individuais ou correções): "Esporte": ["1º","2º","3º"]
 const PODIO = {
 };
+
+// Refeições dos atletas (Salão de Festas, próximo à piscina externa): [dia, início, fim, nome]
+const MEALS = [
+[13,"07:00","09:00","☕ Café da manhã"],[13,"11:30","14:00","🍽️ Almoço"],[13,"19:00","21:00","🍲 Jantar"],
+[14,"07:00","09:00","☕ Café da manhã"],[14,"11:30","14:00","🍽️ Almoço"],[14,"19:00","21:00","🍲 Jantar"],
+[15,"07:00","09:00","☕ Café da manhã"],[15,"11:30","14:00","🍽️ Almoço"],
+];
