@@ -381,7 +381,14 @@ function renderPod(){const el=document.getElementById("viewP");const isMine=t=>c
   const done=[],open=[];[...SPORTS].sort((a,b)=>a.localeCompare(b,"pt")).forEach(sp=>{const p=podium(sp);(p?done:open).push([sp,p])});
   let h="";
   if(!done.length)h+=`<div class="empty">Nenhuma modalidade terminou ainda.<br>O pódio aparece aqui assim que sair o resultado da final.</div>`;
-  done.forEach(([sp,p])=>{h+=`<div class="tbl pod"><h3>${esc(sp)}</h3><div class="pd">`+["🥇","🥈","🥉"].map((m,i)=>p[i]?`<div class="${isMine(p[i])?"me":""}"><span>${m}</span>${hl(p[i])}</div>`:"").join("")+`</div></div>`});
+  const medals=p=>`<div class="pd">`+["🥇","🥈","🥉"].map((m,i)=>p[i]?`<div class="${isMine(p[i])?"me":""}"><span>${m}</span>${hl(p[i])}</div>`:"").join("")+`</div>`;
+  done.forEach(([sp,p])=>{
+    if(p.naipes){Object.entries(p.naipes).forEach(([nm,arr])=>{
+      const tb=(p.tabela||{})[nm]||[];
+      h+=`<div class="tbl pod"><h3>${esc(sp)} · ${esc(nm)}</h3>`+medals(arr)+
+        (tb.length?`<table><tr><th>#</th><th class="t">Centro</th><th>Pontos</th></tr>`+tb.map(([c,pt],i)=>`<tr class="${isMine(c)?"me":""}"><td>${i+1}</td><td class="t">${esc(c)}</td><td><b>${pt}</b></td></tr>`).join("")+`</table>`:"")+
+        ((p.destaque||{})[nm]?`<div class="gl">${esc(p.destaque[nm])}</div>`:"")+`</div>`});return}
+    h+=`<div class="tbl pod"><h3>${esc(sp)}</h3>`+medals(p)+`</div>`});
   if(open.length)h+=`<div class="empty" style="padding:12px 6px;text-align:left"><b>Ainda em disputa:</b> ${open.map(x=>esc(x[0])).join(", ")}</div>`;
   h+=`<div class="empty" style="padding:6px">Resultados conforme a planilha oficial. Em caso de diferença, vale a divulgação da organização.</div>`;
   el.innerHTML=h}
