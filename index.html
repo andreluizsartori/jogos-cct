@@ -356,7 +356,7 @@ function renderStd(){
   if(of&&!list.length)h+=`<div class="empty">Nenhum esporte com grupos nos favoritos.<br>Toque na ☆ ao lado do nome de uma tabela para favoritá-la.</div>`;
   list.forEach(m=>{const R=m.R,gol=R.dr,multi=m.grs.length>1;
     const hasBest=G.some(g=>g.s===m.s&&/melhor/i.test((g.ph||"")+g.a+g.b));const hasSecond=G.some(g=>g.s===m.s&&/2º (do grupo )?[A-D]/i.test((g.ph||"")+g.a+g.b));
-    const cls=hasBest?"1º de cada grupo e o melhor 2º avançam":hasSecond?"1º e 2º de cada grupo avançam":multi?"1º de cada grupo avança":"Classificação final do grupo";
+    const cls=hasBest?"1º de cada grupo e o melhor 2º avançam":hasSecond?"1º e 2º de cada grupo avançam":multi?"Fase de grupos":"Classificação do grupo";
     const q=hasSecond?2:1;
     m.grs.forEach(gr=>{const L=order(stats(gr.teams,gr.games,R),gr.games,R);const cl=clinched(gr,R);
     h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>${esc(m.s)} · ${esc(gr.n)}</span><button class="fstar${fav.has(m.s)?" f":""}" data-s="${esc(m.s)}" aria-label="Favoritar">${fav.has(m.s)?"★":"☆"}</button></h3><div class="sub">${esc(cls)}${cl.done?" · grupo encerrado":""}</div><table>
