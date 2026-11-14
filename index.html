@@ -277,6 +277,11 @@ const GRX=/grupo (único|[A-D])\b/i;
 function groupsOf(sp){const by={};
   G.filter(g=>g.s===sp&&GRX.test(g.f)).forEach(g=>{const k=g.f.match(GRX)[1];const n=k.toLowerCase()==="único"?"Grupo único":"Grupo "+k.toUpperCase();
     (by[n]=by[n]||{n,games:[],teams:[]}).games.push(g);[g.a,g.b].forEach(t=>{if(isReal(t)&&!by[n].teams.includes(t))by[n].teams.push(t)})});
+  // Regulamento Geral, Art. 9 §3 e §4: quem sofre W.O. é desclassificado e todos os seus jogos na fase são desconsiderados
+  Object.values(by).forEach(gr=>{const wo=new Set();
+    gr.games.forEach(g=>{const r=String(g.r||"");if(/^W\.O\. x W\.O\.$/i.test(r)){wo.add(g.a);wo.add(g.b)}else if(/^W\.O\. x/i.test(r))wo.add(g.a);else if(/x W\.O\.$/i.test(r))wo.add(g.b)});
+    gr.all=gr.games;gr.wo=[...wo].filter(t=>gr.teams.includes(t));
+    if(gr.wo.length){gr.teams=gr.teams.filter(t=>!wo.has(t));gr.games=gr.games.filter(g=>!wo.has(g.a)&&!wo.has(g.b))}});
   return Object.values(by).sort((a,b)=>a.n.localeCompare(b.n))}
 function stats(teams,games,R){const T={};teams.forEach(t=>T[t]={t,J:0,V:0,E:0,D:0,P:0,C:0,SP:0,SC:0,Pts:0});
   games.forEach(g=>{const m=score(g);if(!m||!T[g.a]||!T[g.b])return;const A=T[g.a],B=T[g.b],[x,y]=m;A.J++;B.J++;
@@ -370,7 +375,8 @@ function renderStd(){
     <tr><th>#</th><th class="t">Equipe</th><th>Pts</th><th>J</th><th>V</th>${gol?"<th>E</th>":""}<th>D</th><th>${R.lab}</th><th>Saldo</th></tr>`;
     L.forEach((o,i)=>{const a=R.tb==="sets"?o.SP:o.P,b=R.tb==="sets"?o.SC:o.C,sd=a-b;const lock=Object.entries(cl.out).find(([p,t])=>t===o.t);
       h+=`<tr class="${isMine(o.t)?"me":""} ${lock&&+lock[0]<=q?"q":""}"><td>${lock?lock[0]+"º🔒":i+1}</td><td class="t">${esc(o.t)}</td><td><b>${o.Pts}</b></td><td>${o.J}</td><td>${o.V}</td>${gol?`<td>${o.E}</td>`:""}<td>${o.D}</td><td>${a}:${b}</td><td>${sd>0?"+":""}${sd}</td></tr>`});
-    h+=`</table><div class="gl">`+gr.games.map(g=>`${hl(g.a)} ${g.r?`<b>${esc(g.r)}</b>`:"x"} ${hl(g.b)}${g.det?` <span>(${esc(g.det)})</span>`:""}`).join("<br>")+`</div></div>`})});
+    const anul=g=>gr.wo.includes(g.a)||gr.wo.includes(g.b);
+    h+=`</table>`+(gr.wo.length?`<div class="gl" style="color:#b42318"><b style="color:#b42318">Desclassificado por W.O.:</b> ${gr.wo.map(esc).join(", ")}. Pelo regulamento, todos os jogos dessa equipe na fase foram desconsiderados.</div>`:"")+`<div class="gl">`+gr.all.map(g=>`<span style="${anul(g)?"text-decoration:line-through;opacity:.6":""}">${hl(g.a)} ${g.r?`<b>${esc(g.r)}</b>`:"x"} ${hl(g.b)}${g.det?` <span>(${esc(g.det)})</span>`:""}</span>${anul(g)?" <small>(anulado)</small>":""}`).join("<br>")+`</div></div>`})});
   h+=`<div class="empty" style="padding:10px">🔒 = posição garantida, mesmo com jogos por fazer. Pontuação e desempates conforme o Regulamento Técnico. Em caso de diferença, vale a classificação oficial da organização.</div>`;
   el.innerHTML=h;
   document.getElementById("ofc").onchange=e=>{save("jis_ofc",e.target.checked);renderStd()};
