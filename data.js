@@ -153,7 +153,7 @@ const RAW = [
 ["Vôlei 4x4 Masculino",13,"17:40","CAV","CEO/CERES","Quadra de areia 3","Grupo B",0,"","0 x 2",""],
 ["Vôlei 4x4 Masculino",14,"09:00","CCT","CAV","Quadra de areia 2","Semifinal",0,"","2 x 0",""],
 ["Vôlei 4x4 Masculino",14,"09:00","CEO/CERES","REITORIA/CEAVI","Quadra de areia 3","Semifinal",0,"","2 x 0",""],
-["Vôlei 4x4 Masculino",14,"10:00","CAV","REITORIA/CEAVI","Quadra de areia 3","Disputa de 3º",0,"","",""],
+["Vôlei 4x4 Masculino",14,"10:00","CAV","REITORIA/CEAVI","Quadra de areia 3","Disputa de 3º",0,"","0 x 2",""],
 ["Vôlei 4x4 Masculino",14,"11:00","CCT","CEO/CERES","Quadra de areia 3","Final",0,"","1 x 2",""],
 ["Vôlei 4x4 Feminino",13,"15:00","CEO","CAV/CERES/REITORIA","Quadra de areia 1","Grupo único",0,"","0 x 2",""],
 ["Vôlei 4x4 Feminino",13,"15:50","CEPLAN","CEFID","Quadra de areia 1","Grupo único",0,"","2 x 1",""],
