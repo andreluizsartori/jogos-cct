@@ -496,7 +496,10 @@ function applyLive(tabs){
       if(!g){g=mine.find(g=>!done.has(g)&&nrm(g.a)===B&&nrm(g.b)===A);rev=!!g}
       if(!g)return;hits++;done.add(g);x.done=true;
       // boletim tem prioridade: a planilha só preenche placar que o boletim ainda não tem, e nunca muda horário
-      if(x.r&&!g.r){if(rev){const p=x.r.split(" x ");g.r=p[1]+" x "+p[0];g.det=x.det.split(" ").map(s=>s.split("-").reverse().join("-")).join(" ")}else{g.r=x.r;g.det=x.det}}});
+      if(x.r){const xr=rev?x.r.split(" x ").reverse().join(" x "):x.r,xd=rev?x.det.split(" ").map(s=>s.split("-").reverse().join("-")).join(" "):x.det;
+        if(!g.r){g.r=xr;g.det=xd}
+        // parciais (pontos de cada set) da planilha entram quando batem com o placar do boletim
+        else if(!g.det&&xd){const a=parseR(g.r),b=parseR(xr);if(a&&b&&a[0]===b[0]&&a[1]===b[1])g.det=xd}}});
     if(!hits)continue;used++;
     // jogos de fase seguinte: casa por dia e horário quando a planilha já tem os nomes das equipes
     games.forEach(x=>{if(x.done||!x.d||!x.t)return;
