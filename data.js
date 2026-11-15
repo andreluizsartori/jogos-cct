@@ -22,19 +22,19 @@ const RAW = [
 // VÔLEI 4x4 MASCULINO
 // VÔLEI 4x4 FEMININO
 // VÔLEI 4x4 MISTO
-["Vôlei 4x4 Misto",13,"10:50","CCT","REITORIA",QA+"3","Grupo A",0,"","2 x 0","18-13 18-6"],
-["Vôlei 4x4 Misto",14,"11:40","CAV","CERES/CESFI","Quadra de areia 2","Grupo B",0,"","2 x 0",""],
-["Vôlei 4x4 Misto",14,"13:30","CEO","CEPLAN","Quadra de areia 3","Grupo C",0,"","0 x 2",""],
-["Vôlei 4x4 Misto",14,"14:30","CEAD","REITORIA","Quadra de areia 2","Grupo A",0,"","1 x 2",""],
-["Vôlei 4x4 Misto",14,"14:30","ESAG/FAED","CERES/CESFI","Quadra de areia 3","Grupo B",0,"","0 x 2",""],
-["Vôlei 4x4 Misto",14,"15:30","CEART","CEPLAN","Quadra de areia 2","Grupo C",0,"","0 x 2",""],
-["Vôlei 4x4 Misto",14,"15:30","CEAD","CCT","Quadra de areia 3","Grupo A",0,"","0 x 2",""],
-["Vôlei 4x4 Misto",14,"16:30","ESAG/FAED","CAV","Quadra de areia 2","Grupo B",0,"","0 x 2",""],
-["Vôlei 4x4 Misto",14,"16:30","CEART","CEO","Quadra de areia 3","Grupo C",0,"","2 x 0",""],
-["Vôlei 4x4 Misto",15,"09:00","CCT","CEART","Quadra de areia 2","Semifinal",0,"","2 x 0",""],
-["Vôlei 4x4 Misto",15,"09:00","CEPLAN","CAV","Quadra de areia 3","Semifinal",0,"","2 x 1",""],
-["Vôlei 4x4 Misto",15,"10:30","CEART","CAV","Quadra de areia 2","Disputa de 3º",0,"","2 x 0",""],
-["Vôlei 4x4 Misto",15,"10:30","CCT","CEPLAN",QA+"3","Final",0,"","2 x 0"],
+["Vôlei 4x4 Misto",13,"10:50","CCT","REITORIA","Quadra de areia 3","Grupo A",0,"","2 x 0","18-13 18-6"],
+["Vôlei 4x4 Misto",14,"11:40","CAV","CERES/CESFI","Quadra de areia 2","Grupo B",0,"","2 x 0","18-15 18-9"],
+["Vôlei 4x4 Misto",14,"13:30","CEO","CEPLAN","Quadra de areia 3","Grupo C",0,"","0 x 2","8-18 15-18"],
+["Vôlei 4x4 Misto",14,"14:30","CEAD","REITORIA","Quadra de areia 2","Grupo A",0,"","1 x 2","18-12 13-18 6-15"],
+["Vôlei 4x4 Misto",14,"14:30","ESAG/FAED","CERES/CESFI","Quadra de areia 3","Grupo B",0,"","0 x 2","16-18 16-18"],
+["Vôlei 4x4 Misto",14,"15:30","CEART","CEPLAN","Quadra de areia 2","Grupo C",0,"","0 x 2","11-18 11-18"],
+["Vôlei 4x4 Misto",14,"15:30","CEAD","CCT","Quadra de areia 3","Grupo A",0,"","0 x 2","7-18 6-18"],
+["Vôlei 4x4 Misto",14,"16:30","ESAG/FAED","CAV","Quadra de areia 2","Grupo B",0,"","0 x 2","13-18 18-20"],
+["Vôlei 4x4 Misto",14,"16:30","CEART","CEO","Quadra de areia 3","Grupo C",0,"","2 x 0","18-14 18-12"],
+["Vôlei 4x4 Misto",15,"09:00","CCT","CEART","Quadra de areia 2","Semifinal",0,"","2 x 0","18-12 18-10"],
+["Vôlei 4x4 Misto",15,"09:00","CEPLAN","CAV","Quadra de areia 3","Semifinal",0,"","2 x 1","18-14 12-18 15-7"],
+["Vôlei 4x4 Misto",15,"10:30","CEART","CAV","Quadra de areia 2","Disputa de 3º",0,"","2 x 0","18-16 18-7"],
+["Vôlei 4x4 Misto",15,"10:30","CCT","CEPLAN","Quadra de areia 3","Final",0,"","2 x 0","18-12 18-9"],
 // BEACH TENNIS MASCULINO
 // BEACH TENNIS FEMININO
 // BEACH TENNIS MISTO
