@@ -179,7 +179,7 @@ function toggleFav(s){fav.has(s)?fav.delete(s):fav.add(s);persist();renderAll()}
 
 function renderDays(){const el=document.getElementById("days");el.innerHTML="";
   [["all","Todos"],["13","Sexta-feira"],["14","Sábado"],["15","Domingo"]].forEach(([k,l])=>{const b=document.createElement("button");b.textContent=l;if(String(day)===k)b.className="on";b.onclick=()=>{day=k;persist();renderAll()};el.appendChild(b)})}
-function mySports(){return SPORTS.filter(s=>G.some(g=>g.s===s&&!g.c&&involved(g))).sort((a,b)=>a.localeCompare(b,"pt"))}
+function mySports(){return [...SPORTS].sort((a,b)=>a.localeCompare(b,"pt"))}
 function renderChips(){const el=document.getElementById("chips");el.innerHTML="";
   mySports().forEach(s=>{const c=document.createElement("div");c.className="chip"+(fav.has(s)?" sel":"");
     const n=document.createElement("button");n.className="n";n.textContent=s;n.onclick=()=>toggleFav(s);
@@ -189,7 +189,7 @@ function renderChips(){const el=document.getElementById("chips");el.innerHTML=""
 
 function renderList(){
   const now=new Date(),nowDay=(now.getFullYear()===2026&&now.getMonth()===10)?now.getDate():null,nowMin=now.getHours()*60+now.getMinutes();
-  let list=G.filter(g=>involved(g)&&(day==="all"||String(g.d)===String(day))&&(!onlyFav.checked||fav.has(g.s)||g.meal)&&(showCond.checked||!g.c));
+  let list=G.filter(g=>(involved(g)||fav.has(g.s))&&(day==="all"||String(g.d)===String(day))&&(!onlyFav.checked||fav.has(g.s)||g.meal)&&(showCond.checked||!g.c));
   list.sort((a,b)=>a.d-b.d||a.o-b.o);
   const el=document.getElementById("list");el.innerHTML="";
   if(!list.length){el.innerHTML=`<div class="empty">Nenhum jogo com esses filtros.${onlyFav.checked&&!fav.size?"<br>Toque na ☆ de um esporte para favoritá-lo.":""}</div>`;return}
