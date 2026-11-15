@@ -34,7 +34,7 @@ const RAW = [
 ["Vôlei 4x4 Misto",15,"09:00","CCT","CEART","Quadra de areia 2","Semifinal",0,"","2 x 0",""],
 ["Vôlei 4x4 Misto",15,"09:00","CEPLAN","CAV","Quadra de areia 3","Semifinal",0,"","2 x 1",""],
 ["Vôlei 4x4 Misto",15,"10:30","CEART","CAV",QA+"2","Disputa de 3º",0],
-["Vôlei 4x4 Misto",15,"10:30","CCT","CEPLAN",QA+"3","Final",0],
+["Vôlei 4x4 Misto",15,"10:30","CCT","CEPLAN",QA+"3","Final",0,"","2 x 0"],
 // BEACH TENNIS MASCULINO
 // BEACH TENNIS FEMININO
 // BEACH TENNIS MISTO
