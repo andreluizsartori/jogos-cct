@@ -495,14 +495,14 @@ function applyLive(tabs){
       let g=mine.find(g=>!done.has(g)&&nrm(g.a)===A&&nrm(g.b)===B),rev=false;
       if(!g){g=mine.find(g=>!done.has(g)&&nrm(g.a)===B&&nrm(g.b)===A);rev=!!g}
       if(!g)return;hits++;done.add(g);x.done=true;
-      if(x.r){if(rev){const p=x.r.split(" x ");g.r=p[1]+" x "+p[0];g.det=x.det.split(" ").map(s=>s.split("-").reverse().join("-")).join(" ")}else{g.r=x.r;g.det=x.det}}
-      if(x.d&&x.t&&(x.d!==g.d||x.t!==g.t)){g.d=x.d;g.t=x.t;g.o=mins(x.t)}});
+      // boletim tem prioridade: a planilha só preenche placar que o boletim ainda não tem, e nunca muda horário
+      if(x.r&&!g.r){if(rev){const p=x.r.split(" x ");g.r=p[1]+" x "+p[0];g.det=x.det.split(" ").map(s=>s.split("-").reverse().join("-")).join(" ")}else{g.r=x.r;g.det=x.det}}});
     if(!hits)continue;used++;
     // jogos de fase seguinte: casa por dia e horário quando a planilha já tem os nomes das equipes
     games.forEach(x=>{if(x.done||!x.d||!x.t)return;
       const c=mine.filter(g=>!done.has(g)&&g.d===x.d&&g.t===x.t);if(!c.length||(c.length>1&&!c.every(g=>g.c)))return;const g=c[0];
       if(realTeam(x.t1)&&realTeam(x.t2)){g.a=x.t1;g.b=x.t2;g.c=false;g.cs=new Set([...centersIn(x.t1),...centersIn(x.t2)])}else return;
-      done.add(g);if(x.r){g.r=x.r;g.det=x.det}})}
+      done.add(g);if(x.r&&!g.r){g.r=x.r;g.det=x.det}})}
   return used}
 let liveInfo=load("jis_live",null);
 function setUpd(){const u=document.getElementById("upd");
