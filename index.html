@@ -26,6 +26,20 @@ header p{margin:3px 0 0;font-size:12px;opacity:.85}
 .pod .pd div{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:10px;font-size:15px;font-weight:600}
 .pod .pd div span{font-size:22px}
 .pod .pd div.me{background:var(--hl)}
+.mod{margin-bottom:10px}
+.mod>summary{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:13px 14px;cursor:pointer;list-style:none}
+.mod>summary::-webkit-details-marker{display:none}
+.mod>summary .mn{font-weight:700;font-size:15px}
+.mod>summary .mt{font-size:12.5px;color:var(--mut);text-align:right}
+.mod>summary .dot{color:#2e9d5b}
+.mod[open]>summary{border-bottom:1px solid var(--line)}
+.mx{padding:10px 8px 2px}
+.mod .pd{padding:6px 12px 4px}
+.mod .pd div{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;font-size:15px;font-weight:600}
+.mod .pd div span{font-size:20px}
+.mod .pd div.me{background:var(--hl)}
+.mx .fstar{display:none}
+.mx .tbl{box-shadow:none}
 .hide{display:none!important}
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 12px 6px;border-bottom:1px solid var(--line)}
 .seg{display:flex;gap:6px;overflow-x:auto}
@@ -102,11 +116,11 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
 <body>
 <header>
   <h1 style="margin:0"><img src="logo.png" alt="JISUDESC 2026" style="height:34px;width:auto;display:block"></h1>
-  <p>Horários, resultados e classificação · <span id="upd"></span></p>
+  <p>Resultados finais · <span id="upd"></span></p>
   <div class="ctr"><label for="center">Meu centro</label><select id="center"></select></div>
 </header>
 <div class="inst hide" id="inst"></div>
-<nav class="tabs"><button id="tabJ" class="on">Jogos</button><button id="tabC">Classificação</button><button id="tabP">Pódio</button><button id="tabR">Regulamento</button></nav>
+<nav class="tabs"><button id="tabM" class="on">Resultados</button><button id="tabJ" class="hide">Jogos</button><button id="tabC" class="hide">Classificação</button><button id="tabP">Pódios</button><button id="tabR">Regulamento</button></nav>
 
 <div class="bar" id="barJ">
   <div class="seg" id="days"></div>
@@ -126,6 +140,7 @@ h2.day{font-size:16px;margin:18px 4px 8px;color:var(--pri)}
   <div id="list"></div>
 </div>
 <div class="wrap hide" id="viewC"></div>
+<div class="wrap hide" id="viewM"></div>
 <div class="wrap hide" id="viewP"></div>
 <div class="wrap hide" id="viewR"></div>
 
@@ -159,6 +174,7 @@ let center=load("jis_center",null);
 const hc=decodeURIComponent(location.hash.slice(1)).toUpperCase();
 if(CENTROS.includes(hc)||hc==="TODOS"){center=hc==="TODOS"?"ALL":hc;save("jis_center",center)}
 let fav=new Set(load("jis_fav2",[])),sel=new Set(load("jis_sel2",[])),day=load("jis_day","all"),tab=load("jis_tab","J");
+if(typeof ENCERRADO!=="undefined"&&ENCERRADO&&!["M","P","R"].includes(tab))tab="M";
 const onlyFav=document.getElementById("onlyFav"),showCond=document.getElementById("showCond");
 onlyFav.checked=load("jis_of",false);showCond.checked=load("jis_sc",true);
 function persist(){save("jis_fav2",[...fav]);save("jis_sel2",[...sel]);save("jis_day",day);save("jis_of",onlyFav.checked);save("jis_sc",showCond.checked)}
@@ -389,6 +405,71 @@ function renderStd(){
   document.getElementById("ofc").onchange=e=>{save("jis_ofc",e.target.checked);renderStd()};
   el.querySelectorAll(".fstar").forEach(b=>b.onclick=()=>toggleFav(b.dataset.s))}
 
+function stdHTML(spSel){
+  const of=false;let h="";
+  const isMine=t=>center!=="ALL"&&centersIn(t).has(center);
+  let list=SPORTS.map(sp=>({s:sp,R:RU(sp),grs:groupsOf(sp)})).filter(m=>m.grs.length&&m.grs.some(g=>g.teams.length>1));
+  if(center!=="ALL"){const mine=list.filter(m=>m.grs.some(g=>g.teams.some(isMine)));list=[...mine,...list.filter(m=>!mine.includes(m))]}
+  list=list.filter(m=>m.s===spSel);
+  if(of&&!list.length)h+=`<div class="empty">Nenhum esporte com grupos nos favoritos.<br>Toque na ☆ ao lado do nome de uma tabela para favoritá-la.</div>`;
+  if(typeof CORRIDA!=="undefined"&&spSel==="Corrida Rústica"){
+    Object.entries(CORRIDA).forEach(([nm,cd])=>{
+      h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>Corrida Rústica · ${esc(nm)}</span><button class="fstar${fav.has("Corrida Rústica")?" f":""}" data-s="Corrida Rústica" aria-label="Favoritar">${fav.has("Corrida Rústica")?"★":"☆"}</button></h3><div class="sub">Pontuação dos centros (geral: 20, 15, 12 · categoria: 13, 11, 8, 6, 5, 4, 3, 2 · do 9º em diante: 1)</div><table>
+      <tr><th>#</th><th class="t">Centro</th><th>Pontos</th></tr>`+cd.centros.map(([c,p],i)=>`<tr class="${isMine(c)?"me":""} ${i<3?"q":""}"><td>${i+1}</td><td class="t">${esc(c)}</td><td><b>${p}</b></td></tr>`).join("")+`</table>
+      <details class="cx"><summary>Ver todos os atletas (${cd.atletas.length})</summary><table><tr><th>Geral</th><th class="t">Atleta</th><th>Categoria</th><th>Tempo</th></tr>`+
+      cd.atletas.map(([c,n,cat,t,g,cp])=>`<tr class="${isMine(c)?"me":""}"><td>${g}º</td><td class="t">${esc(n)}<br><small style="color:var(--mut)">${esc(c)}</small></td><td>${esc(cat)}${cp?`<br><small>${cp}º</small>`:""}</td><td>${esc(t)}</td></tr>`).join("")+`</table></details></div>`})}
+  if(typeof NATACAO!=="undefined"&&spSel==="Natação"){
+    Object.entries(NATACAO).forEach(([nm,nd])=>{
+      h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>Natação · ${esc(nm)}</span><button class="fstar${fav.has("Natação")?" f":""}" data-s="Natação" aria-label="Favoritar">${fav.has("Natação")?"★":"☆"}</button></h3><div class="sub">Pontuação dos centros (3 primeiros divulgados no boletim)</div><table>
+      <tr><th>#</th><th class="t">Centro</th><th>Pontos</th></tr>`+nd.centros.map(([c,p],i)=>`<tr class="${isMine(c)?"me":""} q"><td>${i+1}</td><td class="t">${esc(c)}</td><td><b>${p}</b></td></tr>`).join("")+`</table>
+      <details class="cx"><summary>Ver tempos de cada atleta (${nd.provas.length} provas)</summary>`+nd.provas.map(pv=>`<div class="sub" style="padding:10px 12px 4px;font-weight:700;color:var(--ink)">${esc(pv.nome)}</div><table>`+
+        (pv.rev?pv.res.map(r=>`<tr class="${r.atletas.some(([n,c])=>isMine(c))?"me":""}"><td>${r.pos}º</td><td class="t">${r.atletas.map(([n,c])=>`${esc(n)} <small style="color:var(--mut)">${esc(c)}</small>`).join("<br>")}</td><td>${esc(r.tempo)}</td></tr>`).join("")
+        :pv.res.map(([n,c,tm,p])=>`<tr class="${isMine(c)?"me":""}"><td>${p}º</td><td class="t">${esc(n)}<br><small style="color:var(--mut)">${esc(c)}</small></td><td>${esc(tm)}</td></tr>`).join(""))+`</table>`).join("")+`</details></div>`})}
+  list.forEach(m=>{const R=m.R,gol=R.dr,multi=m.grs.length>1;
+    const hasBest=G.some(g=>g.s===m.s&&/melhor/i.test((g.ph||"")+g.a+g.b));const hasSecond=G.some(g=>g.s===m.s&&/2º (do grupo )?[A-D]/i.test((g.ph||"")+g.a+g.b));
+    const cls=hasBest?"1º de cada grupo e o melhor 2º avançam":hasSecond?"1º e 2º de cada grupo avançam":multi?"Fase de grupos":"Classificação do grupo";
+    const q=hasSecond?2:1;
+    m.grs.forEach(gr=>{const L=order(stats(gr.teams,gr.games,R),gr.games,R);const cl=clinched(gr,R);
+    h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>${esc(m.s)} · ${esc(gr.n)}</span><button class="fstar${fav.has(m.s)?" f":""}" data-s="${esc(m.s)}" aria-label="Favoritar">${fav.has(m.s)?"★":"☆"}</button></h3><div class="sub">${esc(cls)}${cl.done?" · grupo encerrado":""}</div><table>
+    <tr><th>#</th><th class="t">Equipe</th><th>Pts</th><th>J</th><th>V</th>${gol?"<th>E</th>":""}<th>D</th><th>${R.lab}</th><th>Saldo</th></tr>`;
+    L.forEach((o,i)=>{const a=R.tb==="sets"?o.SP:o.P,b=R.tb==="sets"?o.SC:o.C,sd=a-b;const lock=Object.entries(cl.out).find(([p,t])=>t===o.t);
+      h+=`<tr class="${isMine(o.t)?"me":""} ${lock&&+lock[0]<=q?"q":""}"><td>${lock?lock[0]+"º🔒":i+1}</td><td class="t">${esc(o.t)}</td><td><b>${o.Pts}</b></td><td>${o.J}</td><td>${o.V}</td>${gol?`<td>${o.E}</td>`:""}<td>${o.D}</td><td>${a}:${b}</td><td>${sd>0?"+":""}${sd}</td></tr>`});
+    const anul=g=>gr.wo.includes(g.a)||gr.wo.includes(g.b);
+    h+=`</table>`+(gr.wo.length?`<div class="gl" style="color:#b42318"><b style="color:#b42318">Desclassificado por W.O.:</b> ${gr.wo.map(esc).join(", ")}. Pelo regulamento, todos os jogos dessa equipe na fase foram desconsiderados.</div>`:"")+`<div class="gl">`+gr.all.map(g=>`<span style="${anul(g)?"text-decoration:line-through;opacity:.6":""}">${hl(g.a)} ${g.r?`<b>${esc(g.r)}</b>`:"x"} ${hl(g.b)}${g.det?` <span>(${esc(g.det)})</span>`:""}</span>${anul(g)?" <small>(anulado)</small>":""}`).join("<br>")+`</div></div>`})});
+  return h}
+
+// ===== RESULTADOS POR MODALIDADE (evento encerrado) =====
+const FORD=["Grupo","Jogo 1","Jogo 2","Jogo 3","Jogo único","Classificatória","16 avos","Oitavas","Quartas","Semifinal","Disputa de 3º","Final"];
+function fasePos(f){const i=FORD.findIndex(x=>f.startsWith(x));return i<0?50:i*10+(/Grupo ([A-D])/.test(f)?f.match(/Grupo ([A-D])/)[1].charCodeAt(0)-64:0)}
+function gamesHTML(sp){const gs=G.filter(g=>g.s===sp&&!g.ind&&!g.meal);if(!gs.length)return"";
+  const by={};gs.forEach(g=>{(by[g.f]=by[g.f]||[]).push(g)});
+  return `<div class="tbl"><h3>Todos os jogos</h3>`+Object.keys(by).sort((a,b)=>fasePos(a)-fasePos(b)||a.localeCompare(b)).map(f=>`<div class="sub" style="padding:8px 12px 2px;font-weight:700;color:var(--ink)">${esc(f)}</div><div class="gl" style="border-top:0">`+
+    by[f].map(g=>`${hl(g.a)} ${g.r?`<b>${esc(g.r)}</b>`:"x"} ${g.b?hl(g.b):""}${g.det?` <span>(${esc(g.det)})</span>`:""}${g.n?` <small>· ${esc(g.n)}</small>`:""}`).join("<br>")+`</div>`).join("")+`</div>`}
+function xadrezHTML(){if(typeof XADREZ==="undefined")return"";const isMine=t=>center!=="ALL"&&centersIn(t).has(center);
+  const pts={};Object.keys(XADREZ.jogadores).forEach(n=>pts[n]=0);
+  XADREZ.rodadas.forEach(rd=>rd.forEach(([a,r,b])=>{const[x,y]=r.split("x").map(Number);pts[a]+=x;pts[b]+=y}));
+  const L=Object.entries(pts).sort((a,b)=>b[1]-a[1]);
+  return `<div class="tbl"><h3>Xadrez · classificação individual</h3><table><tr><th>#</th><th class="t">Jogador(a)</th><th>Pontos</th></tr>`+
+    L.map(([n,p],i)=>`<tr class="${isMine(XADREZ.jogadores[n])?"me":""} ${i<3?"q":""}"><td>${i+1}</td><td class="t">${esc(n)}<br><small style="color:var(--mut)">${esc(XADREZ.jogadores[n])}</small></td><td><b>${p}</b></td></tr>`).join("")+`</table>
+    <details class="cx"><summary>Ver as ${XADREZ.rodadas.length} rodadas</summary>`+XADREZ.rodadas.map((rd,i)=>`<div class="sub" style="padding:8px 12px 2px;font-weight:700;color:var(--ink)">Rodada ${i+1}</div><div class="gl" style="border-top:0">`+rd.map(([a,r,b])=>`${esc(a)} <b>${esc(r.replace("x"," x "))}</b> ${esc(b)}`).join("<br>")+`</div>`).join("")+`</details></div>`}
+function renderMod(){const el=document.getElementById("viewM");const isMine=t=>center!=="ALL"&&t&&centersIn(t).has(center);
+  const sps=[...SPORTS].sort((a,b)=>a.localeCompare(b,"pt"));
+  const medal=p=>`<div class="pd">`+["🥇","🥈","🥉"].map((m,i)=>p&&p[i]?`<div class="${isMine(p[i])?"me":""}"><span>${m}</span>${hl(p[i])}</div>`:"").join("")+`</div>`;
+  let h=`<div class="empty" style="padding:4px 6px 12px;text-align:left">🏁 <b>Evento encerrado.</b> Toque numa modalidade para ver o pódio, as tabelas e todos os resultados.</div>`;
+  sps.forEach(sp=>{const p=podium(sp);let top="";
+    if(p&&p.naipes)top=Object.entries(p.naipes).map(([n,a])=>`${n[0]}: ${a[0]}`).join(" · ");else if(p&&p[0])top=p[0];
+    let body="";
+    if(p&&p.naipes)body+=Object.entries(p.naipes).map(([n,a])=>`<div class="sub" style="padding:8px 12px 0;font-weight:700;color:var(--ink)">${esc(n)}</div>`+medal(a)).join("");
+    else if(p)body+=medal(p);
+    body+=`<div class="mx">`+stdHTML(sp).replace(/🔒/g,"")+(sp==="Xadrez"?xadrezHTML():"")+gamesHTML(sp)+`</div>`;
+    const mine=G.some(g=>g.s===sp&&!g.meal&&(g.cs&&g.cs.has(center)));
+    h+=`<details class="tbl mod"><summary><span class="mn">${esc(sp)}</span><span class="mt">${top?"🥇 "+esc(top):""}${mine?' <span class="dot">●</span>':""}</span></summary>${body}</details>`});
+  el.innerHTML=h}
+function renderMedals(){if(center==="ALL")return"";const c={g:0,s:0,b:0,l:[]};
+  SPORTS.forEach(sp=>{const p=podium(sp);if(!p)return;const arr=p.naipes?Object.entries(p.naipes).map(([n,a])=>[sp+" "+n.toLowerCase(),a]):[[sp,p]];
+    arr.forEach(([nm,a])=>a.forEach((t,i)=>{if(t&&centersIn(t).has(center)){c["gsb"[i]]++;c.l.push(["🥇","🥈","🥉"][i]+" "+nm+(t.trim()!==center?` (${t})`:""))}}))});
+  if(!c.l.length)return"";
+  return `<div class="tbl pod"><h3>Medalhas do ${esc(center)}</h3><div class="pd"><div><span>🥇</span>${c.g} ouro</div><div><span>🥈</span>${c.s} prata</div><div><span>🥉</span>${c.b} bronze</div></div><div class="gl">${c.l.map(esc).join("<br>")}</div></div>`}
 // ===== PÓDIO =====
 function podium(sp){if(typeof PODIO!=="undefined"&&PODIO[sp])return PODIO[sp];
   const mine=G.filter(g=>g.s===sp&&!g.ind);if(!mine.length)return null;
@@ -446,12 +527,14 @@ function renderReg(){
   <div class="empty" style="padding:6px">Resumo feito a partir do Regulamento JISUDESC 2026. As regras das outras modalidades estão no PDF completo.</div>`}
 
 function setTab(t){tab=t;save("jis_tab",t);
-  ["J","C","P","R"].forEach(k=>{document.getElementById("tab"+k).className=k===t?"on":"";document.getElementById("view"+k).classList.toggle("hide",k!==t)});
-  document.getElementById("barJ").classList.toggle("hide",t!=="J");window.scrollTo(0,0)}
-["J","C","P","R"].forEach(k=>document.getElementById("tab"+k).onclick=()=>setTab(k));
+  ["M","J","C","P","R"].forEach(k=>{document.getElementById("tab"+k).className=k===t?"on":"";document.getElementById("view"+k).classList.toggle("hide",k!==t)});
+  document.getElementById("barJ").classList.toggle("hide",t!=="J");
+  if(typeof ENCERRADO!=="undefined"&&ENCERRADO){document.getElementById("tabJ").classList.add("hide");document.getElementById("tabC").classList.add("hide")}
+  window.scrollTo(0,0)}
+["M","J","C","P","R"].forEach(k=>document.getElementById("tab"+k).onclick=()=>setTab(k));
 onlyFav.onchange=()=>{persist();renderList()};showCond.onchange=()=>{persist();renderList()};
 
-function renderAll(){resolveBracket();for(let i=0;i<4&&lateMatch();i++)resolveBracket();document.getElementById("remb").classList.toggle("hide",!fav.size);renderDays();renderChips();renderList();renderStd();renderPod()}
+function renderAll(){resolveBracket();for(let i=0;i<4&&lateMatch();i++)resolveBracket();document.getElementById("remb").classList.toggle("hide",!fav.size);renderDays();renderChips();renderList();renderStd();renderPod();renderMod();const pv=document.getElementById("viewP");pv.innerHTML=renderMedals()+pv.innerHTML}
 // ===== RESULTADOS AO VIVO (planilha oficial do chaveamento) =====
 const SHEET_ID="1ZKNnBW2bFo7ZUFw4_LpUEcmrlPmJ8FsPdWsER8a18cI";
 const TABS={"Basquete 3x3":"Basquete 3x3 Masculino","fut7":"Futebol Suíço Masculino",
@@ -549,8 +632,8 @@ setInterval(renderList,60000);
     document.getElementById("instb").onclick=async()=>{dp.prompt();try{await dp.userChoice}catch(_){}box.classList.add("hide")}});
   window.addEventListener("appinstalled",()=>box.classList.add("hide"));
 })();
-fetchLive();setInterval(fetchLive,5*60*1000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)fetchLive()});
+if(!(typeof ENCERRADO!=="undefined"&&ENCERRADO)){fetchLive();setInterval(fetchLive,5*60*1000);}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&!(typeof ENCERRADO!=="undefined"&&ENCERRADO))fetchLive()});
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
 </script>
 </body>

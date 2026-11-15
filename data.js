@@ -1,6 +1,6 @@
 // ===== DADOS DO JISUDESC 2026 =====
 // Atualize aqui a cada boletim novo.
-const BOLETIM = "Boletim 4";
+const BOLETIM = "Boletim 5 (final)";
 
 const CENTROS = ["CAV","CCT","CEAD","CEART","CEAVI","CEFID","CEO","CEPLAN","CERES","CESFI","CESMO","ESAG","FAED","REITORIA"];
 
@@ -33,7 +33,7 @@ const RAW = [
 ["Vôlei 4x4 Misto",14,"16:30","CEART","CEO","Quadra de areia 3","Grupo C",0,"","2 x 0",""],
 ["Vôlei 4x4 Misto",15,"09:00","CCT","CEART","Quadra de areia 2","Semifinal",0,"","2 x 0",""],
 ["Vôlei 4x4 Misto",15,"09:00","CEPLAN","CAV","Quadra de areia 3","Semifinal",0,"","2 x 1",""],
-["Vôlei 4x4 Misto",15,"10:30","CEART","CAV",QA+"2","Disputa de 3º",0],
+["Vôlei 4x4 Misto",15,"10:30","CEART","CAV","Quadra de areia 2","Disputa de 3º",0,"","2 x 0",""],
 ["Vôlei 4x4 Misto",15,"10:30","CCT","CEPLAN",QA+"3","Final",0,"","2 x 0"],
 // BEACH TENNIS MASCULINO
 // BEACH TENNIS FEMININO
@@ -55,33 +55,6 @@ const RAW = [
 ["Tênis de Campo Masculino",14,"15:30","REITORIA","CERES","Quadra de tênis","Disputa de 3º",0,"","vitória x W.O.",""],
 ["Tênis de Campo Masculino",14,"16:30","CEFID1","CEAVI","Quadra de tênis","Final",0,"","8 x 2",""],
 // TÊNIS DE MESA
-["Tênis de Mesa Masculino",15,"08:45","FAED1","CERES",S2+" – mesa 1","Grupo A"],
-["Tênis de Mesa Masculino",15,"08:45","ESAG2","CEAVI2",S2+" – mesa 2","Grupo A"],
-["Tênis de Mesa Masculino",15,"08:45","CEFID2","CEFID1",S2+" – mesa 3","Grupo B"],
-["Tênis de Mesa Masculino",15,"seq","CAV2","CAV1",S2,"Grupo C"],
-["Tênis de Mesa Masculino",15,"seq","CEAVI1","CESFI",S2,"Grupo D"],
-["Tênis de Mesa Masculino",15,"seq","FAED1","ESAG2",S2,"Grupo A"],
-["Tênis de Mesa Masculino",15,"seq","CERES","CEAVI2",S2,"Grupo A"],
-["Tênis de Mesa Masculino",15,"seq","CEPLAN","CEFID1",S2,"Grupo B"],
-["Tênis de Mesa Masculino",15,"seq","ESAG1","CAV1",S2,"Grupo C"],
-["Tênis de Mesa Masculino",15,"seq","FAED2","CESFI",S2,"Grupo D"],
-["Tênis de Mesa Masculino",15,"seq","FAED1","CEAVI2",S2,"Grupo A"],
-["Tênis de Mesa Masculino",15,"seq","CERES","ESAG2",S2,"Grupo A"],
-["Tênis de Mesa Masculino",15,"seq","CEPLAN","CEFID2",S2,"Grupo B"],
-["Tênis de Mesa Masculino",15,"seq","ESAG1","CAV2",S2,"Grupo C"],
-["Tênis de Mesa Masculino",15,"seq","FAED2","CEAVI1",S2,"Grupo D"],
-["Tênis de Mesa Feminino",15,"10:00","CEO2","CEFID1",S2+" – mesa 1","Grupo A"],
-["Tênis de Mesa Feminino",15,"10:00","ESAG","CEFID2",S2+" – mesa 2","Grupo A"],
-["Tênis de Mesa Feminino",15,"10:00","REITORIA","CEAVI1",S2+" – mesa 3","Grupo B"],
-["Tênis de Mesa Feminino",15,"seq","CEO1","CERES",S2,"Grupo C"],
-["Tênis de Mesa Feminino",15,"seq","CEO2","ESAG",S2,"Grupo A"],
-["Tênis de Mesa Feminino",15,"seq","CEFID1","CEFID2",S2,"Grupo A"],
-["Tênis de Mesa Feminino",15,"seq","CESFI","CEAVI1",S2,"Grupo B"],
-["Tênis de Mesa Feminino",15,"seq","CEAVI2","CERES",S2,"Grupo C"],
-["Tênis de Mesa Feminino",15,"seq","CEO2","CEFID2",S2,"Grupo A"],
-["Tênis de Mesa Feminino",15,"seq","CEFID1","ESAG",S2,"Grupo A"],
-["Tênis de Mesa Feminino",15,"seq","REITORIA","CESFI",S2,"Grupo B"],
-["Tênis de Mesa Feminino",15,"seq","CEO1","CEAVI2",S2,"Grupo C"],
 // TOTÓ
 // TRUCO
 // --- atualizado pelo Boletim 2 ---
@@ -157,7 +130,7 @@ const RAW = [
 ["Bocha Feminino",14,"15:30","CEFID2","CEO","Cancha","Semifinal",0,"","4 x 24",""],
 ["Bocha Feminino",14,"16:30","CEFID1","CAV","Cancha","Semifinal",0,"","6 x 24",""],
 ["Bocha Feminino",14,"17:30","CEFID2","CEFID1","Cancha","Disputa de 3º",0,"","8 x 24",""],
-["Bocha Feminino",15,"09:30","CEO","CAV","Cancha","Final",0,"","",""],
+["Bocha Feminino",15,"09:30","CEO","CAV","Cancha","Final",0,"","18 x 24",""],
 ["Sinuca Masculino",13,"13:30","CAV1","CESFI1","Sala de jogos – mesa 1","Oitavas",0,"","2 x 1",""],
 ["Sinuca Masculino",13,"13:30","CEAD","CERES","Sala de jogos – mesa 2","Oitavas",0,"","2 x 1",""],
 ["Sinuca Masculino",13,"14:00","CEART/FAED","CCT","Sala de jogos – mesa 1","Oitavas",0,"","1 x 2",""],
@@ -236,20 +209,8 @@ const RAW = [
 ["Tênis de Campo Feminino",13,"18:00","REITORIA","CEAVI2","Quadra de tênis","Grupo B",0,"","2 x 6",""],
 ["Tênis de Campo Feminino",14,"09:00","CCT","CEFID","Quadra de tênis","Grupo A",0,"","6 x 1",""],
 ["Tênis de Campo Feminino",14,"10:00","CCT","CEAVI1","Quadra de tênis","Semifinal",0,"","6 x 0",""],
-["Tênis de Campo Feminino",14,"14:30","CEAVI2","CESFI","Quadra de tênis","Semifinal",0,"","10 x 8",""],
+["Tênis de Campo Feminino",14,"14:30","CEAVI2","CEFID","Quadra de tênis","Semifinal",0,"","10 x 8",""],
 ["Tênis de Campo Feminino",14,"17:30","CCT","CEAVI2","Quadra de tênis","Final",0,"","6 x 0",""],
-["Tênis de Mesa Masculino",15,"11:00","1º do grupo A","2º do grupo D","Salão 2 – mesa 1","Quartas",1,"","",""],
-["Tênis de Mesa Masculino",15,"11:00","1º do grupo B","2º do grupo C","Salão 2 – mesa 2","Quartas",1,"","",""],
-["Tênis de Mesa Masculino",15,"11:00","1º do grupo C","2º do grupo B","Salão 2 – mesa 3","Quartas",1,"","",""],
-["Tênis de Mesa Masculino",15,"11:15","1º do grupo D","2º do grupo A","Salão 2 – mesa 1","Quartas",1,"","",""],
-["Tênis de Mesa Masculino",15,"11:30","Semifinal 1","","Salão 2 – mesa 1","Semifinal",1,"","",""],
-["Tênis de Mesa Masculino",15,"11:30","Semifinal 2","","Salão 2 – mesa 2","Semifinal",1,"","",""],
-["Tênis de Mesa Masculino",15,"12:00","Perdedores das semifinais","","Salão 2 – mesa 1","Disputa de 3º",1,"","",""],
-["Tênis de Mesa Masculino",15,"12:00","Vencedores das semifinais","","Salão 2 – mesa 2","Final",1,"","",""],
-["Tênis de Mesa Feminino",15,"11:15","1º melhor","Melhor 2º","Salão 2 – mesa 2","Semifinal",1,"","",""],
-["Tênis de Mesa Feminino",15,"11:15","2º melhor 1º","3º melhor 1º","Salão 2 – mesa 3","Semifinal",1,"","",""],
-["Tênis de Mesa Feminino",15,"11:45","Perdedores das semifinais","","Salão 2 – mesa 1","Disputa de 3º",1,"","",""],
-["Tênis de Mesa Feminino",15,"11:45","Vencedores das semifinais","","Salão 2 – mesa 2","Final",1,"","",""],
 // --- atualizado pelo Boletim 3 ---
 ["FIFA",14,"08:00","CEAVI1","CEFID2","Sala de jogos","Grupo A",0,"","6 x 1",""],
 ["FIFA",14,"08:15","CERES","CEAD","Sala de jogos","Grupo A",0,"","6 x 1",""],
@@ -335,6 +296,46 @@ const RAW = [
 ["Taco Masculino",14,"seq","CCT-A","CERES","Gramado","Semifinal",0,"","0 x 10",""],
 ["Taco Masculino",14,"seq","CCT-B","CEFID","Gramado","Semifinal",0,"","9 x 11",""],
 ["Taco Masculino",14,"seq","CEFID","CERES","Gramado","Final",0,"","0 x 10",""],
+// --- atualizado pelo Boletim 5 (final) ---
+["Tênis de Mesa Masculino",15,"seq","FAED1","CERES","Salão 2","Grupo A",0,"","W.O. x vitória",""],
+["Tênis de Mesa Masculino",15,"seq","ESAG2","CEAVI2","Salão 2","Grupo A",0,"","0 x 2",""],
+["Tênis de Mesa Masculino",15,"seq","CEFID2","CEFID1","Salão 2","Grupo B",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CAV2","CAV1","Salão 2","Grupo C",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CEAVI1","CESFI","Salão 2","Grupo D",0,"","0 x 2",""],
+["Tênis de Mesa Masculino",15,"seq","FAED1","ESAG2","Salão 2","Grupo A",0,"","W.O. x vitória",""],
+["Tênis de Mesa Masculino",15,"seq","CERES","CEAVI2","Salão 2","Grupo A",0,"","1 x 2",""],
+["Tênis de Mesa Masculino",15,"seq","CEPLAN","CEFID1","Salão 2","Grupo B",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","ESAG1","CAV1","Salão 2","Grupo C",0,"","0 x 2",""],
+["Tênis de Mesa Masculino",15,"seq","FAED2","CESFI","Salão 2","Grupo D",0,"","1 x 2",""],
+["Tênis de Mesa Masculino",15,"seq","FAED1","CEAVI2","Salão 2","Grupo A",0,"","W.O. x vitória",""],
+["Tênis de Mesa Masculino",15,"seq","CERES","ESAG2","Salão 2","Grupo A",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CEPLAN","CEFID2","Salão 2","Grupo B",0,"","2 x 1",""],
+["Tênis de Mesa Masculino",15,"seq","ESAG1","CAV2","Salão 2","Grupo C",0,"","0 x 2",""],
+["Tênis de Mesa Masculino",15,"seq","FAED2","CEAVI1","Salão 2","Grupo D",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CEAVI2","FAED2","Salão 2","Quartas",0,"","2 x 1",""],
+["Tênis de Mesa Masculino",15,"seq","CEPLAN","CAV1","Salão 2","Quartas",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CAV2","CEFID2","Salão 2","Quartas",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CESFI","CERES","Salão 2","Quartas",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CEAVI2","CEPLAN","Salão 2","Semifinal",0,"","0 x 2",""],
+["Tênis de Mesa Masculino",15,"seq","CAV2","CESFI","Salão 2","Semifinal",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CEAVI2","CESFI","Salão 2","Disputa de 3º",0,"","2 x 0",""],
+["Tênis de Mesa Masculino",15,"seq","CEPLAN","CAV2","Salão 2","Final",0,"","0 x 2",""],
+["Tênis de Mesa Feminino",15,"seq","CEO2","CEFID1","Salão 2","Grupo A",0,"","W.O. x vitória",""],
+["Tênis de Mesa Feminino",15,"seq","ESAG","CEFID2","Salão 2","Grupo A",0,"","2 x 0",""],
+["Tênis de Mesa Feminino",15,"seq","REITORIA","CEAVI1","Salão 2","Grupo B",0,"","2 x 0",""],
+["Tênis de Mesa Feminino",15,"seq","CEO1","CERES","Salão 2","Grupo C",0,"","2 x 0",""],
+["Tênis de Mesa Feminino",15,"seq","CEO2","ESAG","Salão 2","Grupo A",0,"","W.O. x vitória",""],
+["Tênis de Mesa Feminino",15,"seq","CEFID1","CEFID2","Salão 2","Grupo A",0,"","2 x 0",""],
+["Tênis de Mesa Feminino",15,"seq","CESFI","CEAVI1","Salão 2","Grupo B",0,"","W.O. x vitória",""],
+["Tênis de Mesa Feminino",15,"seq","CEAVI2","CERES","Salão 2","Grupo C",0,"","2 x 0",""],
+["Tênis de Mesa Feminino",15,"seq","CEO2","CEFID2","Salão 2","Grupo A",0,"","W.O. x vitória",""],
+["Tênis de Mesa Feminino",15,"seq","CEFID1","ESAG","Salão 2","Grupo A",0,"","2 x 0",""],
+["Tênis de Mesa Feminino",15,"seq","REITORIA","CESFI","Salão 2","Grupo B",0,"","vitória x W.O.",""],
+["Tênis de Mesa Feminino",15,"seq","CEO1","CEAVI2","Salão 2","Grupo C",0,"","2 x 0",""],
+["Tênis de Mesa Feminino",15,"seq","CEO1","CEAVI1","Salão 2","Semifinal",0,"","0 x 2",""],
+["Tênis de Mesa Feminino",15,"seq","CEFID1","REITORIA","Salão 2","Semifinal",0,"","0 x 2",""],
+["Tênis de Mesa Feminino",15,"seq","CEFID1","CEAVI1","Salão 2","Disputa de 3º",0,"","0 x 2",""],
+["Tênis de Mesa Feminino",15,"seq","CEO1","REITORIA","Salão 2","Final",0,"","0 x 2",""],
 ];
 
 // Provas individuais: [esporte, dia, hora, título, local, fase, {CENTRO:"nomes; separados"}]
@@ -415,6 +416,8 @@ const PODIO = {
  "Taco Feminino": ["CESFI/CERES","CEO","CEFID"],
  "Taco Masculino": ["CERES","CEFID","CCT-B"],
  "Tênis de Campo Feminino": ["CCT","CEAVI2","CEAVI1"],
+ "Xadrez": ["REITORIA","ESAG","CEAD"],
+ "Bocha Feminino": ["CAV","CEO","CEFID1"],
  "Gincana": ["CERES (64)","CEFID (61)","CCT (40)"],
  "Beach Tennis Feminino": ["CEFID","CESFI/FAED","ESAG"],
  "Natação": {naipes:{"Masculino":["CEFID","CEPLAN","CEART"],"Feminino":["CEFID","CEPLAN","CEART"]},
@@ -442,3 +445,8 @@ const CORRIDA = {"Masculino": {"centros": [["CEFID", 62], ["CAV", 54], ["REITORI
 
 // Natação (Boletim 4)
 const NATACAO = {"Masculino": {"centros": [["CEFID", 79], ["CEPLAN", 35], ["CEART", 33]], "provas": [{"nome": "25 m livre · Adulto", "res": [["Mauricio Camaroto", "CEFID", "12,88", 1], ["Felipe Domingos Lisboa", "CEFID", "13,32", 2], ["Diogo Luiz de Alcantara Lopes", "CEO", "14,53", 3], ["Carlos Raphael Rocha", "CCT", "14,72", 4], ["Eduardo Rodrigues", "CAV", "16,16", 5], ["Uilderson Aparecido Cezar", "REITORIA", "16,44", 6], ["Felipe Marcos Rocha Coelho", "CEFID", "16,47", 7]]}, {"nome": "25 m livre · Master", "res": [["Douglas Ladik Antunes", "CEART", "14,66", 1], ["Mario Ezequiel Augusto", "CEPLAN", "15,47", 2], ["André de Abreu", "CEAD", "15,56", 3], ["Roberto Boell Vaz", "ESAG", "17,50", 4]]}, {"nome": "25 m costas · Adulto", "res": [["Felipe Domingos Lisboa", "CEFID", "17,19", 1], ["Mauricio Camaroto", "CEFID", "17,35", 2], ["Diogo Luiz de Alcantara Lopes", "CEO", "18,72", 3], ["Carlos Raphael Rocha", "CCT", "18,81", 4], ["Uilderson Aparecido Cezar", "REITORIA", "22,32", 5], ["Jackson Roberto Theiss", "CAV", "23,90", 6]]}, {"nome": "25 m costas · Master", "res": [["Douglas Ladik Antunes", "CEART", "19,69", 1], ["Mario Ezequiel Augusto", "CEPLAN", "24,05", 2], ["Alessandro Siqueira", "CCT", "24,97", 3], ["Roberto Boell Vaz", "ESAG", "25,94", 4]]}, {"nome": "25 m peito · Adulto", "res": [["Mauricio Camaroto", "CEFID", "17,75", 1], ["Felipe Domingos Lisboa", "CEFID", "17,82", 2], ["Carlos Raphael Rocha", "CCT", "18,78", 3], ["Diogo Luiz de Alcantara Lopes", "CEO", "19,68", 4], ["Felipe Marcos Rocha Coelho", "CEFID", "20,41", 5], ["Eduardo Rodrigues", "CAV", "21,47", 6], ["Uilderson Aparecido Cezar", "REITORIA", "23,06", 7], ["Jackson Roberto Theiss", "CAV", "26,69", 8]]}, {"nome": "25 m peito · Master", "res": [["Douglas Ladik Antunes", "CEART", "18,99", 1], ["Mario Ezequiel Augusto", "CEPLAN", "23,56", 2], ["Roberto Boell Vaz", "ESAG", "23,84", 3], ["André de Abreu", "CEAD", "23,97", 4]]}, {"nome": "25 m borboleta · Adulto", "res": [["Felipe Domingos Lisboa", "CEFID", "14,40", 1], ["Mauricio Camaroto", "CEFID", "15,37", 2], ["Carlos Raphael Rocha", "CCT", "19,03", 3], ["Diogo Luiz de Alcantara Lopes", "CEO", "20,61", 4]]}, {"nome": "25 m borboleta · Master", "res": [["André de Abreu", "CEAD", "19,87", 1], ["Mario Ezequiel Augusto", "CEPLAN", "22,50", 2]]}, {"nome": "Revezamento 4 × 25 m livre", "res": [{"pos": 1, "tempo": "1:02,03", "atletas": [["Mauricio Camaroto", "CEFID"], ["Carlos Raphael Rocha", "CCT"], ["André de Abreu", "CEAD"], ["Jackson Roberto Theiss", "CAV"]]}, {"pos": 2, "tempo": "1:02,50", "atletas": [["Felipe Domingos Lisboa", "CEFID"], ["Diogo Luiz de Alcantara Lopes", "CEO"], ["Uilderson Aparecido Cezar", "REITORIA"], ["Roberto Boell Vaz", "ESAG"]]}, {"pos": 3, "tempo": "1:10,33", "atletas": [["Douglas Ladik Antunes", "CEART"], ["Mario Ezequiel Augusto", "CEPLAN"], ["Alessandro Siqueira", "CCT"], ["Alisson Pitela", "CAV"]]}], "rev": true}]}, "Feminino": {"centros": [["CEFID", 64], ["CEPLAN", 27], ["CEART", 25]], "provas": [{"nome": "25 m livre · Adulto", "res": [["Caroline Ruschel", "CEFID", "16,06", 1], ["Bruna Lima Selau", "CERES", "16,62", 2], ["Katiane Ruckl", "CEPLAN", "16,71", 3], ["Milena Barbi Ferreira", "ESAG", "18,44", 4], ["Mariana Klauck Beirith", "CEFID", "20,09", 5], ["Michelli Vitoria Silvestre", "CEFID", "29,74", 6]]}, {"nome": "25 m livre · Master", "res": [["Alicia Cupani", "CEART", "17,56", 1], ["Adriana Guede Luiz", "CEFID", "24,19", 2]]}, {"nome": "25 m costas · Adulto", "res": [["Caroline Ruschel", "CEFID", "19,84", 1], ["Bruna Lima Selau", "CERES", "21,25", 2], ["Katiane Ruckl", "CEPLAN", "23,78", 3], ["Milena Barbi Ferreira", "ESAG", "24,59", 4], ["Mariana Klauck Beirith", "CEFID", "29,28", 5]]}, {"nome": "25 m peito · Adulto", "res": [["Bruna Lima Selau", "CEFID", "21,72", 1], ["Milena Barbi Ferreira", "ESAG", "23,22", 2], ["Mariana Klauck Beirith", "CEFID", "24,26", 3], ["Katiane Ruckl", "CEPLAN", "24,68", 4]]}, {"nome": "25 m peito · Master", "res": [["Alicia Cupani", "CEART", "28,60", 1]]}, {"nome": "25 m borboleta · Adulto", "res": [["Caroline Ruschel", "CEFID", "17,03", 1], ["Bruna Lima Selau", "CERES", "19,75", 2], ["Katiane Ruckl", "CEPLAN", "20,63", 3], ["Milena Barbi Ferreira", "ESAG", "23,60", 4]]}, {"nome": "Revezamento 4 × 25 m livre", "res": [{"pos": 1, "tempo": "1:33,56", "atletas": [["Adriana Guede Luiz", "CEFID"], ["Alicia Cupani", "CEART"], ["Michelli Vitoria Silvestre", "CEFID"], ["Katiane Ruckl", "CEPLAN"]]}], "rev": true}]}};
+
+// Xadrez (Boletim 5): rodadas no sistema suíço/rodízio
+const XADREZ = {"jogadores": {"Leonardo Secchi": "ESAG", "Narima Alemsan": "CEAD", "Matheus Rodrigo Machado": "CAV", "Alessandro Siqueira": "CCT", "Akaua Flores Arroyo": "REITORIA", "Alicia Cupani": "CEART"}, "rodadas": [[["Leonardo Secchi", "1x0", "Narima Alemsan"], ["Matheus Rodrigo Machado", "0x1", "Alessandro Siqueira"], ["Akaua Flores Arroyo", "1x0", "Alicia Cupani"]], [["Narima Alemsan", "1x0", "Alicia Cupani"], ["Alessandro Siqueira", "0x1", "Akaua Flores Arroyo"], ["Leonardo Secchi", "1x0", "Matheus Rodrigo Machado"]], [["Matheus Rodrigo Machado", "0x1", "Narima Alemsan"], ["Akaua Flores Arroyo", "1x0", "Leonardo Secchi"], ["Alicia Cupani", "0x1", "Alessandro Siqueira"]], [["Narima Alemsan", "1x0", "Alessandro Siqueira"], ["Leonardo Secchi", "1x0", "Alicia Cupani"], ["Matheus Rodrigo Machado", "0x1", "Akaua Flores Arroyo"]], [["Akaua Flores Arroyo", "1x0", "Narima Alemsan"], ["Alicia Cupani", "1x0", "Matheus Rodrigo Machado"], ["Alessandro Siqueira", "0x1", "Leonardo Secchi"]]]};
+
+const ENCERRADO = true;
