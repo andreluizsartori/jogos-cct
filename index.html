@@ -480,16 +480,17 @@ function rowsToGames(rows){const out=[];
       const wo=[...L,...R].some(x=>/W/i.test(x));
       if(wo){r=L.some(x=>/W/i.test(x))?"W.O. x vitória":"vitória x W.O."}
       else if(L.length===1&&R.length===1)r=`${L[0]} x ${R[0]}`;
-      else if(L.length>1&&L.length===R.length){let a=0,b=0;const p=[];L.forEach((x,i)=>{p.push(x+"-"+R[i]);+x>+R[i]?a++:b++});r=`${a} x ${b}`;det=p.join(" ")}
+      else if(L.length>1||R.length>1){const k=Math.min(L.length,R.length);let a=0,b=0;const p=[];for(let i=0;i<k;i++){p.push(L[i]+"-"+R[i]);+L[i]>+R[i]?a++:+R[i]>+L[i]?b++:0}if(Math.max(a,b)>=2){r=`${a} x ${b}`;det=p.join(" ")}}
       out.push({t1,t2,r,det,d,t,fase:row[k+1]||""})})});
   return out}
 const realTeam=x=>centersIn(x).size>0&&!/^(VJ|PJ|[VP]\d|\d|MELHOR|PERDEDOR|VENCEDOR)/i.test(x.trim());
 let LIVE={};
+function noDraw(sp,r){if(/^FIFA|^Futebol/.test(sp))return r;const m=parseR(r);return m&&m[0]===m[1]?"":r}
 function applyLive(tabs){
   G.forEach((g,i)=>Object.assign(g,BASE[i]));LIVE={};
   let used=0;
   for(const[tab,csv]of Object.entries(tabs)){const sp=TABS[tab];if(!sp||!csv)continue;
-    const games=rowsToGames(csvParse(csv)),mine=G.filter(g=>g.s===sp);const done=new Set();let hits=0;LIVE[sp]=games;
+    const games=rowsToGames(csvParse(csv)).map(x=>(x.r=noDraw(sp,x.r),x)),mine=G.filter(g=>g.s===sp);const done=new Set();let hits=0;LIVE[sp]=games;
     games.forEach(x=>{const A=nrm(x.t1),B=nrm(x.t2);
       let g=mine.find(g=>!done.has(g)&&nrm(g.a)===A&&nrm(g.b)===B),rev=false;
       if(!g){g=mine.find(g=>!done.has(g)&&nrm(g.a)===B&&nrm(g.b)===A);rev=!!g}
