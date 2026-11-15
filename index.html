@@ -366,6 +366,13 @@ function renderStd(){
       <tr><th>#</th><th class="t">Centro</th><th>Pontos</th></tr>`+cd.centros.map(([c,p],i)=>`<tr class="${isMine(c)?"me":""} ${i<3?"q":""}"><td>${i+1}</td><td class="t">${esc(c)}</td><td><b>${p}</b></td></tr>`).join("")+`</table>
       <details class="cx"><summary>Ver todos os atletas (${cd.atletas.length})</summary><table><tr><th>Geral</th><th class="t">Atleta</th><th>Categoria</th><th>Tempo</th></tr>`+
       cd.atletas.map(([c,n,cat,t,g,cp])=>`<tr class="${isMine(c)?"me":""}"><td>${g}º</td><td class="t">${esc(n)}<br><small style="color:var(--mut)">${esc(c)}</small></td><td>${esc(cat)}${cp?`<br><small>${cp}º</small>`:""}</td><td>${esc(t)}</td></tr>`).join("")+`</table></details></div>`})}
+  if(typeof NATACAO!=="undefined"&&(!of||fav.has("Natação"))){
+    Object.entries(NATACAO).forEach(([nm,nd])=>{
+      h+=`<div class="tbl"><h3 class="top" style="padding-right:10px"><span>Natação · ${esc(nm)}</span><button class="fstar${fav.has("Natação")?" f":""}" data-s="Natação" aria-label="Favoritar">${fav.has("Natação")?"★":"☆"}</button></h3><div class="sub">Pontuação dos centros (3 primeiros divulgados no boletim)</div><table>
+      <tr><th>#</th><th class="t">Centro</th><th>Pontos</th></tr>`+nd.centros.map(([c,p],i)=>`<tr class="${isMine(c)?"me":""} q"><td>${i+1}</td><td class="t">${esc(c)}</td><td><b>${p}</b></td></tr>`).join("")+`</table>
+      <details class="cx"><summary>Ver tempos de cada atleta (${nd.provas.length} provas)</summary>`+nd.provas.map(pv=>`<div class="sub" style="padding:10px 12px 4px;font-weight:700;color:var(--ink)">${esc(pv.nome)}</div><table>`+
+        (pv.rev?pv.res.map(r=>`<tr class="${r.atletas.some(([n,c])=>isMine(c))?"me":""}"><td>${r.pos}º</td><td class="t">${r.atletas.map(([n,c])=>`${esc(n)} <small style="color:var(--mut)">${esc(c)}</small>`).join("<br>")}</td><td>${esc(r.tempo)}</td></tr>`).join("")
+        :pv.res.map(([n,c,tm,p])=>`<tr class="${isMine(c)?"me":""}"><td>${p}º</td><td class="t">${esc(n)}<br><small style="color:var(--mut)">${esc(c)}</small></td><td>${esc(tm)}</td></tr>`).join(""))+`</table>`).join("")+`</details></div>`})}
   list.forEach(m=>{const R=m.R,gol=R.dr,multi=m.grs.length>1;
     const hasBest=G.some(g=>g.s===m.s&&/melhor/i.test((g.ph||"")+g.a+g.b));const hasSecond=G.some(g=>g.s===m.s&&/2º (do grupo )?[A-D]/i.test((g.ph||"")+g.a+g.b));
     const cls=hasBest?"1º de cada grupo e o melhor 2º avançam":hasSecond?"1º e 2º de cada grupo avançam":multi?"Fase de grupos":"Classificação do grupo";
