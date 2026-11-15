@@ -17,7 +17,7 @@ const RAW = [
 // FUTEBOL SUÍÇO
 ["Futebol Suíço Masculino",14,"10:00","CCT/CEPLAN","CEAVI/CERES/CAV/REITORIA/ESAG","Campo suíço","Jogo 1 – grupo único",0,"Empate; CCT/CEPLAN venceu nos pênaltis","2 x 2",""],
 ["Futebol Suíço Masculino",14,"15:00","CEFID","CEAVI/CERES/CAV/REITORIA/ESAG","Campo suíço","Jogo 2 – grupo único",0,"","6 x 2",""],
-["Futebol Suíço Masculino",15,"09:30","CEFID","CCT/CEPLAN","Campo suíço","Jogo 3 – grupo único",0,"CEFID venceu (placar final ainda não informado)","",""],
+["Futebol Suíço Masculino",15,"09:30","CEFID","CCT/CEPLAN","Campo suíço","Jogo 3 – grupo único",0,"","3 x 2",""],
 ["Futebol Suíço Sênior",14,"11:00","CAV","CCT/CEFID/FAED/CEART","Campo suíço","Jogo único",0,"","4 x 2",""],
 // VÔLEI 4x4 MASCULINO
 // VÔLEI 4x4 FEMININO
@@ -414,7 +414,6 @@ const STD = [
 const PODIO = {
  "Taco Feminino": ["CESFI/CERES","CEO","CEFID"],
  "Taco Masculino": ["CERES","CEFID","CCT-B"],
- "Futebol Suíço Masculino": ["CEFID"],
  "Tênis de Campo Feminino": ["CCT","CEAVI2","CEAVI1"],
  "Gincana": ["CERES (64)","CEFID (61)","CCT (40)"],
  "Beach Tennis Feminino": ["CEFID","CESFI/FAED","ESAG"],
