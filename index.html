@@ -189,7 +189,7 @@ function renderChips(){const el=document.getElementById("chips");el.innerHTML=""
 
 function renderList(){
   const now=new Date(),nowDay=(now.getFullYear()===2026&&now.getMonth()===10)?now.getDate():null,nowMin=now.getHours()*60+now.getMinutes();
-  let list=G.filter(g=>(involved(g)||fav.has(g.s))&&(day==="all"||String(g.d)===String(day))&&(!onlyFav.checked||fav.has(g.s)||g.meal)&&(showCond.checked||!g.c));
+  let list=G.filter(g=>involved(g)&&(day==="all"||String(g.d)===String(day))&&(!onlyFav.checked||fav.has(g.s)||g.meal)&&(showCond.checked||!g.c));
   list.sort((a,b)=>a.d-b.d||a.o-b.o);
   const el=document.getElementById("list");el.innerHTML="";
   if(!list.length){el.innerHTML=`<div class="empty">Nenhum jogo com esses filtros.${onlyFav.checked&&!fav.size?"<br>Toque na ☆ de um esporte para favoritá-lo.":""}</div>`;return}
